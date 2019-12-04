@@ -1,15 +1,13 @@
 package com.revature.revaturequiz.repository;
 
-import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.revature.revaturequiz.model.Quiz;
 
 @Repository
-public interface QuizRepository extends JpaRepository<Quiz, Long> {
-	@Query("SELECT name,created_by,updated_on FROM quizs")
-	List<Quiz> findAllQuiz();
+public interface QuizRepository {
+//	extends JpaRepository<Quiz, Long>
+//	@Query(value="SELECT name,tags,activity_point FROM quizzes",nativeQuery=true)
+//	List<Quiz> findAllQuizzes();
+//	@Query(value="INSERT INTO quizzes()",nativeQuery=true)
+//	public int addQuiz();
 }
