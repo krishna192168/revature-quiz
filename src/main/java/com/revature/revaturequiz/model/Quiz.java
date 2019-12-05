@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 public class Quiz {
-	private Long id;
+	private Integer id;
 	private String name;
 	private String tags;
 	private Integer activityPoints;

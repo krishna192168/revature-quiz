@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,8 +19,10 @@ import org.springframework.stereotype.Repository;
 import com.revature.revaturequiz.dto.QuizDTO;
 import com.revature.revaturequiz.dto.QuizResponseDTO;
 import com.revature.revaturequiz.exception.DBException;
+import com.revature.revaturequiz.model.Quiz;
 import com.revature.revaturequiz.model.QuizPool;
 import com.revature.revaturequiz.model.QuizPoolQuestion;
+import com.revature.revaturequiz.util.ConnectionUtil;
 
 @Repository
 public class QuizDAOImpl implements QuizDAO {
@@ -34,43 +37,163 @@ public class QuizDAOImpl implements QuizDAO {
 		try {
 			conn = dataSource.getConnection();
 			quizzes = new ArrayList<QuizResponseDTO>();
-			String sqlStmt = "SELECT quiz.name AS quizname,level.name AS levelname,category.name AS categoryname,created_by,quiz.is_status "
-					+ "FROM "
-					+ "quizzes "
-					+ "quiz,levels level,categories category "
-					+ "ORDER BY quiz.created_on DESC;";
+			String sqlStmt = "SELECT quiz.id,"
+					+ "quiz.name AS quiz_name,"
+					+ "quiz.tags,"
+					+ "quiz.activity_point,"
+					+ "quiz.duration,"
+					+ "quiz.max_number_of_attempts,"
+					+ "quiz.is_level_override,"
+					+ "quiz.slug_url,"
+					+ "quiz.description,"
+					+ "quiz.meta_keywords,"
+					+ "quiz.meta_description,"
+					+ "quiz.icon_url,"
+					+ "quiz.quiz_instructions,"
+					+ "quiz.level_id,"
+					+ "quiz.category_id,"
+					+ "quiz.pass_percentage,"
+					+ "quiz.is_slug_url_access,"
+					+ "quiz.quiz_timer,"
+					+ "quiz.shuffle_question,"
+					+ "quiz.shuffle_answer,"
+					+ "quiz.display_score_result,"
+					+ "quiz.attempt_review,"
+					+ "quiz.show_whether_correct,"
+					+ "quiz.show_correct_answer,"
+					+ "quiz.show_answer_explanation,"
+					+ "quiz.is_save_and_resume,"
+					+ "quiz.created_on,"
+//					+ "quiz.updated_on,"
+					+ "quiz.created_by,"
+					+ "quiz.modified_by "
+					+ "FROM quizzes quiz ORDER BY quiz.created_on";
 			pstmt = conn.prepareStatement(sqlStmt);
 			resultSet = pstmt.executeQuery();
-			QuizResponseDTO quizResponseDTO = null;
 			while (resultSet.next()) {
-				String quizName = resultSet.getString("quizname");
-				String levelName = resultSet.getString("levelname");
-				String categoryName = resultSet.getString("categoryname");
-				String createdBy = resultSet.getString("created_by");
-				Boolean isQuizStatus = resultSet.getBoolean("is_status");
-				quizResponseDTO = new QuizResponseDTO();
-				quizResponseDTO.setQuizName(quizName);
-				quizResponseDTO.setLevelName(levelName);
-				quizResponseDTO.setCategoryName(categoryName);
-				quizResponseDTO.setCreatedBy(createdBy);
-				quizResponseDTO.setIsStatus(isQuizStatus);
-				quizzes.add(quizResponseDTO);
+				quizzes.add(toRow(resultSet));
 			}
 		} catch (SQLException e) {
 			throw new DBException(e.getMessage());
 		} finally {
-			try {
-				conn.close();
-				pstmt.close();
-				resultSet.close();
-			} catch (SQLException e) {
-				System.err.println(e.getMessage());
-			}
-
+			ConnectionUtil.close(conn, pstmt, resultSet);
 		}
 
 		return quizzes;
 	}
+	
+	public QuizResponseDTO toRow(ResultSet resultSet)
+	{
+		QuizResponseDTO  quizResponseDTO = null;
+		try {
+			Integer quizId = resultSet.getInt("id");
+			String quizName = resultSet.getString("quiz_name");
+			String quizTags = resultSet.getString("tags");
+			Integer activityPoints = resultSet.getInt("activity_point");
+			Time duration = resultSet.getTime("duration"); 
+			Integer maxNumberOfAttempts = resultSet.getInt("max_number_of_attempts");
+			Boolean isLevelOverride = resultSet.getBoolean("is_level_override");
+			String slugUrl = resultSet.getString("slug_url");
+			String description = resultSet.getString("description");
+			String metaKeywords = resultSet.getString("meta_keywords");
+			String metaDescription = resultSet.getString("meta_description");
+			String iconUrl = resultSet.getString("icon_url");
+			String quizInstructions = resultSet.getString("quiz_instructions");
+			Integer levelId = resultSet.getInt("level_id");
+			Integer categoryId = resultSet.getInt("category_id");
+			Integer passPercentage = resultSet.getInt("pass_percentage");
+			Boolean isSlugUrlAccess = resultSet.getBoolean("is_slug_url_access");
+			Boolean isQuizTimerEnnabled = resultSet.getBoolean("quiz_timer");
+			Boolean isShuffleQuestion = resultSet.getBoolean("shuffle_question");
+			Boolean isShuffleAnswer = resultSet.getBoolean("shuffle_answer");
+			Boolean isDisplayScoreResult = resultSet.getBoolean("display_score_result");
+			Boolean isAttemptReview = resultSet.getBoolean("attempt_review");
+			Boolean isShowWhetherCorrect = resultSet.getBoolean("show_whether_correct");
+			Boolean isShowCorrectAnswer = resultSet.getBoolean("show_correct_answer");
+			Boolean isShowAnswerExplanation = resultSet.getBoolean("show_answer_explanation");
+			Boolean isSaveAndResume = resultSet.getBoolean("is_save_and_resume");
+			Timestamp createdOn = resultSet.getTimestamp("created_on");
+//			Timestamp modifiedOn = resultSet.getTimestamp("updated_on");
+			String createdBy = resultSet.getString("created_by");
+			String modifiedBy = resultSet.getString("modified_by");
+
+			quizResponseDTO = new QuizResponseDTO();
+			Quiz quiz = new Quiz();
+			quiz.setId(quizId);
+			quiz.setName(quizName);
+			quiz.setTags(quizTags);
+			quiz.setActivityPoints(activityPoints);
+			quiz.setDuration(duration);
+			quiz.setMaxNumbetOfAttempts(maxNumberOfAttempts);
+			quiz.setIsLevelOverride(isLevelOverride);
+			quiz.setSlugUrl(slugUrl);
+			quiz.setDescription(description);
+			quiz.setMetaKeywords(metaKeywords);
+			quiz.setMetaDescription(metaDescription);
+			quiz.setIconUrl(iconUrl);
+			quiz.setQuizInstructions(quizInstructions);
+			quiz.setLevelId(levelId);
+			quiz.setCategoryId(categoryId);
+			quiz.setPassPercentage(passPercentage);
+			quiz.setIsSlugUrlAccess(isSlugUrlAccess);
+			quiz.setIsQuizTimerEnnable(isQuizTimerEnnabled);
+			quiz.setIsShuffleQuestion(isShuffleQuestion);
+			quiz.setIsShuffleAnswer(isShuffleAnswer);
+			quiz.setIsDisplayScoreResult(isDisplayScoreResult);
+			quiz.setIsAttemptReview(isAttemptReview);
+			quiz.setIsShowWhetherCorrect(isShowWhetherCorrect);
+			quiz.setIsShowCorrectAnswer(isShowCorrectAnswer);
+			quiz.setIsShowAnswerExplanation(isShowAnswerExplanation);
+			quiz.setIsSaveAndResume(isSaveAndResume);
+			quiz.setCreatedOn(createdOn);
+//			quiz.setModifiedOn(modifiedOn);
+			quiz.setCreatedBy(createdBy);
+			quiz.setModifiedBy(modifiedBy);
+			
+			quizResponseDTO.setQuiz(quiz);
+			
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return quizResponseDTO;
+	}
+	/**
+	 * Find all quiz pools
+	 * */
+	public List<QuizPool> findAllPools()
+	{
+		List<QuizPool> quizPool = null;
+		PreparedStatement pstmt = null;
+		ResultSet resultSet = null;
+		Connection conn = null;
+		try {
+			conn = dataSource.getConnection();
+			quizPool = new ArrayList<QuizPool>();
+			String sqlStmt = "SELECT id,name,max_number_of_questions,quiz_id FROM quiz_pools";
+			pstmt = conn.prepareStatement(sqlStmt);
+			resultSet = pstmt.executeQuery();
+			QuizPool quizPoolObj = null;
+			while(resultSet.next())
+			{
+				quizPoolObj = new QuizPool();
+				quizPoolObj.setId(resultSet.getInt("id"));
+				quizPoolObj.setName(resultSet.getString("name"));
+				quizPoolObj.setMaxNumerOfQuestion(resultSet.getInt("max_number_of_questions"));
+				quizPoolObj.setQuizId(resultSet.getInt("quiz_id"));
+				quizPool.add(quizPoolObj);
+			}
+		} catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+		return quizPool;
+	}
+	
+	/**
+	 * Create create quiz
+	 * @param: QuizDTO=>Quiz details.
+	 * @return: if query successfully created return true or false.
+	 */
 	public Boolean createQuiz(QuizDTO quiz) throws DBException
 	{
 		Connection conn = null;
@@ -114,8 +237,9 @@ public class QuizDAOImpl implements QuizDAO {
 					+ "updated_on,"
 					+ "modified_by,"
 					+ "is_slug_url_access,"
-					+ "created_on"
-					+ ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+					+ "created_on,"
+					+ "quiz_instructions"
+					+ ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			pstmt = conn.prepareStatement(sqlStmt);
 			pstmt.setString(1, quiz.getQuiz().getName());
 			pstmt.setString(2, quiz.getQuiz().getTags());
@@ -147,9 +271,10 @@ public class QuizDAOImpl implements QuizDAO {
 			Date date = new Date();
 			Timestamp currentTimestamp = new Timestamp(date.getTime());
 			pstmt.setTimestamp(27, currentTimestamp);
+			pstmt.setString(28, quiz.getQuiz().getQuizInstructions());
 			rowsAffectedQuiz = pstmt.executeUpdate();
 			pstmt.close();
-			//Get last record id for quiz
+			//Get quiz last record id
 			Integer quizId = null;
 			String sqlStmtForId = "SELECT LAST_INSERT_ID() AS last_record_id";
 			pstmt = conn.prepareStatement(sqlStmtForId);
@@ -177,7 +302,7 @@ public class QuizDAOImpl implements QuizDAO {
 				rowsAffectedQuizPool = pstmt.executeUpdate();
 				pstmt.close();
 			}
-			//Get last record id for quiz pool
+			//Get quiz pool last record id
 			Integer quizPoolId = null;
 			String sqlStmtForPoolId = "SELECT LAST_INSERT_ID() AS last_record_id";
 			pstmt = conn.prepareStatement(sqlStmtForPoolId);
@@ -201,6 +326,7 @@ public class QuizDAOImpl implements QuizDAO {
 				rowsAffectedPoolQuestions = pstmt.executeUpdate();
 				pstmt.close();
 			}
+			//Here change record has permanent
 			conn.commit();
 			if(rowsAffectedQuiz == 1 && rowsAffectedPoolQuestions == 1 && rowsAffectedQuizPool == 1)
 			{
@@ -212,17 +338,15 @@ public class QuizDAOImpl implements QuizDAO {
 			try {
 				conn.rollback(createQuiz);
 			} catch (SQLException e1) {
-				System.err.println(e.getMessage());
+				e.printStackTrace();
 			}
 			throw new DBException(e.getMessage());
 		}
 		finally {
-			try {
-				conn.close();
-			} catch (SQLException e) {
-				System.err.println(e.getMessage());
-			}
+			ConnectionUtil.close(conn);
 		}
 		return isRowsInserted;
 	}
+	//Validate quiz
+//	public void 
 }
