@@ -10,7 +10,9 @@ import com.revature.revaturequiz.dto.QuizDTO;
 import com.revature.revaturequiz.dto.QuizResponseDTO;
 import com.revature.revaturequiz.exception.DBException;
 import com.revature.revaturequiz.exception.ServiceException;
+import com.revature.revaturequiz.exception.ValidatorException;
 import com.revature.revaturequiz.util.MessageConstant;
+import com.revature.revaturequiz.validator.QuizValidator;
 
 @Service
 public class QuizService {
@@ -34,13 +36,14 @@ public class QuizService {
 	{
 		Boolean isQuizCreated = null;
 		try {
-			//Create Quiz
+			//Call create Quiz method in dao
+			QuizValidator.quizValidator(quiz);
 			isQuizCreated = quizDAO.createQuiz(quiz);
 			if(isQuizCreated == false)
 			{
 				throw new ServiceException(MessageConstant.UNABLE_TO_CREATE_QUIZ);
 			}
-		} catch (DBException e) {
+		}catch(ValidatorException | DBException e) {
 			throw new ServiceException(e.getMessage());
 		}
 		return isQuizCreated;

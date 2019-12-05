@@ -1,6 +1,7 @@
 package com.revature.revaturequiz.model;
 
-import java.time.LocalDate;
+import java.sql.Time;
+import java.sql.Timestamp;
 
 import lombok.Data;
 
@@ -10,7 +11,7 @@ public class Quiz {
 	private String name;
 	private String tags;
 	private Integer activityPoints;
-	//TODO:Time
+	private Time duration;
 	private Integer maxNumbetOfAttempts;
 	private Boolean isLevelOverride;
 	private String slugUrl;
@@ -32,8 +33,8 @@ public class Quiz {
 	private Boolean isShowCorrectAnswer;
 	private Boolean isShowAnswerExplanation;
 	private Boolean isSaveAndResume;
-	private LocalDate createdOn;
-	private LocalDate modifiedOn;
+	private Timestamp createdOn;
+	private Timestamp modifiedOn;
 	private String createdBy;
 	private String modifiedBy;
 	private Boolean isSatus;
