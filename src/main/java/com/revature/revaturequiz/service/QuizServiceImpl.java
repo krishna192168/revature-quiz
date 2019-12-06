@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.revature.revaturequiz.dao.QuizDAO;
+import com.revature.revaturequiz.dto.PoolResponseDTO;
 import com.revature.revaturequiz.dto.QuizDTO;
 import com.revature.revaturequiz.dto.QuizResponseDTO;
 import com.revature.revaturequiz.exception.DBException;
@@ -26,27 +27,16 @@ public class QuizServiceImpl implements QuizService {
 	{
 		List<QuizResponseDTO> quizzesList;
 		List<Quiz> quizzes = null;
-		List<QuizPool> pools = null;
-		List<QuizPoolQuestion> questions = null;
 		QuizResponseDTO quizResDTO = null;
 		try {
 			quizResDTO = new QuizResponseDTO();
 			quizzesList = new ArrayList<QuizResponseDTO>();
 			quizzes = quizDAO.findAllQuizzes();
-			Integer quizId = null;
 			for(Quiz quizObj : quizzes)
 			{
 				quizResDTO.setQuiz(quizObj);
 				quizzesList.add(quizResDTO);
-				quizId = quizObj.getId();
-				pools = quizDAO.findPools(quizId);
-				quizResDTO.setPools(pools);
-				for(QuizPool pool : pools)
-				{
-					questions = quizDAO.findPoolQuestions(pool.getId());
-					
-				}
-				quizResDTO.setPoolQuestions(questions);
+				
 			}
 			if(quizzesList.isEmpty())
 			{
@@ -56,6 +46,22 @@ public class QuizServiceImpl implements QuizService {
 			throw new ServiceException(e.getMessage());
 		}
 		return quizzesList;
+	}
+	public PoolResponseDTO findPoolByQuizId(int quizId)
+	{
+		List<QuizPool> pools = null;
+		List<QuizPoolQuestion> poolQuestion = null;
+		PoolResponseDTO poolResponseObj = new PoolResponseDTO();
+		Integer poolId = null;
+		pools = quizDAO.findPools(quizId);
+		poolResponseObj.setPools(pools);
+		for(QuizPool poolObj : pools)
+		{
+			poolId = poolObj.getId();
+			poolQuestion = quizDAO.findPoolQuestions(poolId);
+			poolResponseObj.setPoolQuestions(poolQuestion);
+		}
+		return poolResponseObj;
 	}
 	public Boolean createQuiz(QuizDTO quiz) throws ServiceException
 	{

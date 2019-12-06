@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ConnectionUtil {
+	private ConnectionUtil() {}
 	public static void close(Connection conn)
 	{
 		try {

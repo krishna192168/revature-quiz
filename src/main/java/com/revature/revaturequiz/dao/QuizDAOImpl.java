@@ -13,6 +13,8 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -27,6 +29,9 @@ import com.revature.revaturequiz.util.ConnectionUtil;
 public class QuizDAOImpl implements QuizDAO {
 	@Autowired
 	private DataSource dataSource;
+	
+	Logger quizLogger = LoggerFactory.getLogger("QuizDAO");
+	
 	public List<Quiz> findAllQuizzes() throws DBException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -66,13 +71,14 @@ public class QuizDAOImpl implements QuizDAO {
 //					+ "quiz.updated_on,"
 					+ "quiz.created_by,"
 					+ "quiz.modified_by "
-					+ "FROM quizzes quiz ORDER BY quiz.created_on";
+					+ "FROM quizzes quiz ORDER BY quiz.created_on LIMIT 5";
 			pstmt = conn.prepareStatement(sqlStmt);
 			resultSet = pstmt.executeQuery();
 			while (resultSet.next()) {
 				quizzes.add(toRow(resultSet));
 			}
 		} catch (SQLException e) {
+			quizLogger.error(e.getMessage(), e);
 			throw new DBException(e.getMessage());
 		} finally {
 			ConnectionUtil.close(conn, pstmt, resultSet);
@@ -84,7 +90,6 @@ public class QuizDAOImpl implements QuizDAO {
 	public Quiz toRow(ResultSet resultSet)
 	{
 		Quiz quiz = null;
-//		QuizResponseDTO  quizResponseDTO = null;
 		try {
 			Integer quizId = resultSet.getInt("id");
 			String quizName = resultSet.getString("quiz_name");
@@ -117,7 +122,6 @@ public class QuizDAOImpl implements QuizDAO {
 			String createdBy = resultSet.getString("created_by");
 			String modifiedBy = resultSet.getString("modified_by");
 
-//			quizResponseDTO = new QuizResponseDTO();
 			quiz = new Quiz();
 			quiz.setId(quizId);
 			quiz.setName(quizName);
@@ -150,9 +154,8 @@ public class QuizDAOImpl implements QuizDAO {
 			quiz.setCreatedBy(createdBy);
 			quiz.setModifiedBy(modifiedBy);
 			
-//			quizResponseDTO.setQuiz(quiz);
-			
 		} catch(SQLException e) {
+			quizLogger.error(e.getMessage(), e);
 			e.printStackTrace();
 		}
 		return quiz;
@@ -169,7 +172,7 @@ public class QuizDAOImpl implements QuizDAO {
 		try {
 			conn = dataSource.getConnection();
 			quizPool = new ArrayList<QuizPool>();
-			String sqlStmt = "SELECT id,name,max_number_of_questions,quiz_id FROM quiz_pools WHERE quiz_id = ?";
+			String sqlStmt = "SELECT id,name,max_number_of_questions,quiz_id FROM quiz_pools WHERE quiz_id = ? LIMIT 5";
 			pstmt = conn.prepareStatement(sqlStmt);
 			pstmt.setInt(1, quizId);
 			resultSet = pstmt.executeQuery();
@@ -186,6 +189,8 @@ public class QuizDAOImpl implements QuizDAO {
 		} catch(SQLException e)
 		{
 			e.printStackTrace();
+		}finally {
+			ConnectionUtil.close(conn,pstmt,resultSet);
 		}
 		return quizPool;
 	}
@@ -199,7 +204,7 @@ public class QuizDAOImpl implements QuizDAO {
 		try {
 			poolQuestions = new ArrayList<QuizPoolQuestion>();
 			conn = dataSource.getConnection();
-			String sqlStmt = "SELECT id,question_id,quiz_pool_id,is_sticky,is_evaluate FROM quiz_pool_questions WHERE quiz_pool_id = ?";
+			String sqlStmt = "SELECT id,question_id,quiz_pool_id,is_sticky,is_evaluate FROM quiz_pool_questions WHERE quiz_pool_id = ? LIMIT 5";
 			pstmt = conn.prepareStatement(sqlStmt);
 			pstmt.setInt(1, poolId);
 			resultSet = pstmt.executeQuery();
@@ -208,7 +213,7 @@ public class QuizDAOImpl implements QuizDAO {
 			{
 				questions = new QuizPoolQuestion();
 				questions.setId(resultSet.getInt("id"));
-				questions.setQuizPoolId(resultSet.getInt("question_id"));
+				questions.setQuestionId(resultSet.getInt("question_id"));
 				questions.setQuizPoolId(resultSet.getInt("quiz_pool_id"));
 				questions.setIsSticky(resultSet.getBoolean("is_sticky"));
 				questions.setIsEvaluate(resultSet.getBoolean("is_evaluate"));
@@ -217,6 +222,8 @@ public class QuizDAOImpl implements QuizDAO {
 		}catch(SQLException e)
 		{
 			e.printStackTrace();
+		}finally {
+			ConnectionUtil.close(conn,pstmt,resultSet);
 		}
 		return poolQuestions;
 	}
