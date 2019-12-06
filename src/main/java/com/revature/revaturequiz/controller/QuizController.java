@@ -18,11 +18,11 @@ import com.revature.revaturequiz.service.QuizService;
 import com.revature.revaturequiz.util.MessageConstant;
 
 @RestController
-@RequestMapping("/quizzes")
+@RequestMapping("/quiz")
 public class QuizController {
 	@Autowired
 	private QuizService quizService;
-	@GetMapping("/")
+	@GetMapping("/list")
 	public ResponseEntity<Object> findAllQuizzes()
 	{
 		List<QuizResponseDTO> quizzesList = null;

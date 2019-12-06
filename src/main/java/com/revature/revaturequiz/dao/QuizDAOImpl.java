@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.revature.revaturequiz.dto.QuizDTO;
-import com.revature.revaturequiz.dto.QuizResponseDTO;
 import com.revature.revaturequiz.exception.DBException;
 import com.revature.revaturequiz.model.Quiz;
 import com.revature.revaturequiz.model.QuizPool;
@@ -28,15 +27,15 @@ import com.revature.revaturequiz.util.ConnectionUtil;
 public class QuizDAOImpl implements QuizDAO {
 	@Autowired
 	private DataSource dataSource;
-	public List<QuizResponseDTO> findAllQuizzes() throws DBException {
+	public List<Quiz> findAllQuizzes() throws DBException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet resultSet = null;
-		List<QuizResponseDTO> quizzes = null;
+		List<Quiz> quizzes = null;
 
 		try {
 			conn = dataSource.getConnection();
-			quizzes = new ArrayList<QuizResponseDTO>();
+			quizzes = new ArrayList<Quiz>();
 			String sqlStmt = "SELECT quiz.id,"
 					+ "quiz.name AS quiz_name,"
 					+ "quiz.tags,"
@@ -82,9 +81,10 @@ public class QuizDAOImpl implements QuizDAO {
 		return quizzes;
 	}
 	
-	public QuizResponseDTO toRow(ResultSet resultSet)
+	public Quiz toRow(ResultSet resultSet)
 	{
-		QuizResponseDTO  quizResponseDTO = null;
+		Quiz quiz = null;
+//		QuizResponseDTO  quizResponseDTO = null;
 		try {
 			Integer quizId = resultSet.getInt("id");
 			String quizName = resultSet.getString("quiz_name");
@@ -117,8 +117,8 @@ public class QuizDAOImpl implements QuizDAO {
 			String createdBy = resultSet.getString("created_by");
 			String modifiedBy = resultSet.getString("modified_by");
 
-			quizResponseDTO = new QuizResponseDTO();
-			Quiz quiz = new Quiz();
+//			quizResponseDTO = new QuizResponseDTO();
+			quiz = new Quiz();
 			quiz.setId(quizId);
 			quiz.setName(quizName);
 			quiz.setTags(quizTags);
@@ -150,17 +150,17 @@ public class QuizDAOImpl implements QuizDAO {
 			quiz.setCreatedBy(createdBy);
 			quiz.setModifiedBy(modifiedBy);
 			
-			quizResponseDTO.setQuiz(quiz);
+//			quizResponseDTO.setQuiz(quiz);
 			
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-		return quizResponseDTO;
+		return quiz;
 	}
 	/**
 	 * Find all quiz pools
 	 * */
-	public List<QuizPool> findAllPools()
+	public List<QuizPool> findPools(int quizId)
 	{
 		List<QuizPool> quizPool = null;
 		PreparedStatement pstmt = null;
@@ -169,8 +169,9 @@ public class QuizDAOImpl implements QuizDAO {
 		try {
 			conn = dataSource.getConnection();
 			quizPool = new ArrayList<QuizPool>();
-			String sqlStmt = "SELECT id,name,max_number_of_questions,quiz_id FROM quiz_pools";
+			String sqlStmt = "SELECT id,name,max_number_of_questions,quiz_id FROM quiz_pools WHERE quiz_id = ?";
 			pstmt = conn.prepareStatement(sqlStmt);
+			pstmt.setInt(1, quizId);
 			resultSet = pstmt.executeQuery();
 			QuizPool quizPoolObj = null;
 			while(resultSet.next())
@@ -187,6 +188,37 @@ public class QuizDAOImpl implements QuizDAO {
 			e.printStackTrace();
 		}
 		return quizPool;
+	}
+	
+	public List<QuizPoolQuestion> findPoolQuestions(int poolId)
+	{
+		List<QuizPoolQuestion> poolQuestions = null;
+		PreparedStatement pstmt = null;
+		ResultSet resultSet = null;
+		Connection conn = null;
+		try {
+			poolQuestions = new ArrayList<QuizPoolQuestion>();
+			conn = dataSource.getConnection();
+			String sqlStmt = "SELECT id,question_id,quiz_pool_id,is_sticky,is_evaluate FROM quiz_pool_questions WHERE quiz_pool_id = ?";
+			pstmt = conn.prepareStatement(sqlStmt);
+			pstmt.setInt(1, poolId);
+			resultSet = pstmt.executeQuery();
+			QuizPoolQuestion questions = null;
+			while(resultSet.next())
+			{
+				questions = new QuizPoolQuestion();
+				questions.setId(resultSet.getInt("id"));
+				questions.setQuizPoolId(resultSet.getInt("question_id"));
+				questions.setQuizPoolId(resultSet.getInt("quiz_pool_id"));
+				questions.setIsSticky(resultSet.getBoolean("is_sticky"));
+				questions.setIsEvaluate(resultSet.getBoolean("is_evaluate"));
+				poolQuestions.add(questions);
+			}
+		}catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+		return poolQuestions;
 	}
 	
 	/**
@@ -285,7 +317,7 @@ public class QuizDAOImpl implements QuizDAO {
 			}
 			resultSet.close();
 			pstmt.close();
-			//Create pool
+			//Create pools
 			List<QuizPool> quizPools = quiz.getQuizPool();
 			for(QuizPool quizObj : quizPools)
 			{

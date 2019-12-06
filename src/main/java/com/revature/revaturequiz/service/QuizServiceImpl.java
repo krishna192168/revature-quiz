@@ -1,5 +1,6 @@
 package com.revature.revaturequiz.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,9 @@ import com.revature.revaturequiz.dto.QuizResponseDTO;
 import com.revature.revaturequiz.exception.DBException;
 import com.revature.revaturequiz.exception.ServiceException;
 import com.revature.revaturequiz.exception.ValidatorException;
+import com.revature.revaturequiz.model.Quiz;
+import com.revature.revaturequiz.model.QuizPool;
+import com.revature.revaturequiz.model.QuizPoolQuestion;
 import com.revature.revaturequiz.util.MessageConstant;
 import com.revature.revaturequiz.validator.QuizValidator;
 
@@ -21,8 +25,29 @@ public class QuizServiceImpl implements QuizService {
 	public List<QuizResponseDTO> findAllQuizzes() throws ServiceException
 	{
 		List<QuizResponseDTO> quizzesList;
+		List<Quiz> quizzes = null;
+		List<QuizPool> pools = null;
+		List<QuizPoolQuestion> questions = null;
+		QuizResponseDTO quizResDTO = null;
 		try {
-			quizzesList = quizDAO.findAllQuizzes();
+			quizResDTO = new QuizResponseDTO();
+			quizzesList = new ArrayList<QuizResponseDTO>();
+			quizzes = quizDAO.findAllQuizzes();
+			Integer quizId = null;
+			for(Quiz quizObj : quizzes)
+			{
+				quizResDTO.setQuiz(quizObj);
+				quizzesList.add(quizResDTO);
+				quizId = quizObj.getId();
+				pools = quizDAO.findPools(quizId);
+				quizResDTO.setPools(pools);
+				for(QuizPool pool : pools)
+				{
+					questions = quizDAO.findPoolQuestions(pool.getId());
+					
+				}
+				quizResDTO.setPoolQuestions(questions);
+			}
 			if(quizzesList.isEmpty())
 			{
 				throw new ServiceException(MessageConstant.UNABLE_TO_GET_QUIZZES);
