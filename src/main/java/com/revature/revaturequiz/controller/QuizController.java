@@ -45,7 +45,7 @@ public class QuizController {
 			quizService.createQuiz(quiz);
 			return new ResponseEntity<>(MessageConstant.SUCCESSFULLY_QUIZ_CREATED,HttpStatus.OK);
 		} catch (ServiceException e) {
-			System.err.println(e.getMessage());
+			e.printStackTrace();
 			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -53,9 +53,14 @@ public class QuizController {
 	public ResponseEntity<Object> findPoolByQuizId(@PathVariable("quizId") int quizId)
 	{
 		PoolResponseDTO poolResponse = null;
+		try {
+			poolResponse = quizService.findPoolByQuizId(quizId);
+			return new ResponseEntity<>(poolResponse,HttpStatus.OK);
+		}
+		catch(ServiceException e) {
+			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+		}
 		
-		poolResponse = quizService.findPoolByQuizId(quizId);
 		
-		return new ResponseEntity<>(poolResponse,HttpStatus.OK);
 	}
 }

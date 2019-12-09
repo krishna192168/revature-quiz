@@ -9,4 +9,5 @@ public final class MessageConstant {
 	public static final String INAVALID_TAG = "Invalid tag";
 	public static final String INAVALID_ACTIVITY_POINTS = "Invalid activity points";
 	public static final String INAVALID_MAX_NO_ATTEMPTS = "Invalid maximum number of attempts";
+	public static final String UNABLE_TO_GET_POOLS = "Unable to get pools";
 }

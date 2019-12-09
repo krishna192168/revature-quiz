@@ -12,5 +12,5 @@ public interface QuizDAO {
 	public List<Quiz> findAllQuizzes() throws DBException;
 	public Boolean createQuiz(QuizDTO quiz) throws DBException;
 	public List<QuizPool> findPools(int quizId);
-	public List<QuizPoolQuestion> findPoolQuestions(int poolId);
+	public List<QuizPoolQuestion> findPoolQuestions(int poolId) throws DBException;
 }

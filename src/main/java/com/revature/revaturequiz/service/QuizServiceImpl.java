@@ -25,41 +25,50 @@ public class QuizServiceImpl implements QuizService {
 	private QuizDAO quizDAO;
 	public List<QuizResponseDTO> findAllQuizzes() throws ServiceException
 	{
-		List<QuizResponseDTO> quizzesList;
+		List<QuizResponseDTO> quizzesDTO;
 		List<Quiz> quizzes = null;
 		QuizResponseDTO quizResDTO = null;
 		try {
 			quizResDTO = new QuizResponseDTO();
-			quizzesList = new ArrayList<QuizResponseDTO>();
+			quizzesDTO = new ArrayList<QuizResponseDTO>();
 			quizzes = quizDAO.findAllQuizzes();
 			for(Quiz quizObj : quizzes)
 			{
 				quizResDTO.setQuiz(quizObj);
-				quizzesList.add(quizResDTO);
-				
+				quizzesDTO.add(quizResDTO);
 			}
-			if(quizzesList.isEmpty())
+			if(quizzesDTO.isEmpty())
 			{
 				throw new ServiceException(MessageConstant.UNABLE_TO_GET_QUIZZES);
 			}
 		} catch (DBException e) {
 			throw new ServiceException(e.getMessage());
 		}
-		return quizzesList;
+		return quizzesDTO;
 	}
-	public PoolResponseDTO findPoolByQuizId(int quizId)
+	public PoolResponseDTO findPoolByQuizId(int quizId) throws ServiceException
 	{
 		List<QuizPool> pools = null;
 		List<QuizPoolQuestion> poolQuestion = null;
 		PoolResponseDTO poolResponseObj = new PoolResponseDTO();
-		Integer poolId = null;
-		pools = quizDAO.findPools(quizId);
-		poolResponseObj.setPools(pools);
-		for(QuizPool poolObj : pools)
+		try {
+			Integer poolId = null;
+			pools = quizDAO.findPools(quizId);
+			if(pools.isEmpty())
+			{
+				throw new ServiceException(MessageConstant.UNABLE_TO_GET_POOLS);	
+			}
+			poolResponseObj.setPools(pools);
+			for(QuizPool poolObj : pools)
+			{
+				poolId = poolObj.getId();
+				poolQuestion = quizDAO.findPoolQuestions(poolId);
+				poolResponseObj.setPoolQuestions(poolQuestion);
+			}
+		}
+		catch(DBException e)
 		{
-			poolId = poolObj.getId();
-			poolQuestion = quizDAO.findPoolQuestions(poolId);
-			poolResponseObj.setPoolQuestions(poolQuestion);
+			throw new ServiceException(MessageConstant.UNABLE_TO_GET_POOLS);
 		}
 		return poolResponseObj;
 	}

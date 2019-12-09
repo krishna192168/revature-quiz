@@ -10,5 +10,5 @@ import com.revature.revaturequiz.exception.ServiceException;
 public interface QuizService {
 	public List<QuizResponseDTO> findAllQuizzes() throws ServiceException;
 	public Boolean createQuiz(QuizDTO quiz) throws ServiceException;
-	public PoolResponseDTO findPoolByQuizId(int quizId);
+	public PoolResponseDTO findPoolByQuizId(int quizId) throws ServiceException;
 }

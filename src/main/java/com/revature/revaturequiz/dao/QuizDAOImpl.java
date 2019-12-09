@@ -24,6 +24,7 @@ import com.revature.revaturequiz.model.Quiz;
 import com.revature.revaturequiz.model.QuizPool;
 import com.revature.revaturequiz.model.QuizPoolQuestion;
 import com.revature.revaturequiz.util.ConnectionUtil;
+import com.revature.revaturequiz.util.MessageConstant;
 
 @Repository
 public class QuizDAOImpl implements QuizDAO {
@@ -79,7 +80,7 @@ public class QuizDAOImpl implements QuizDAO {
 			}
 		} catch (SQLException e) {
 			quizLogger.error(e.getMessage(), e);
-			throw new DBException(e.getMessage());
+			throw new DBException(MessageConstant.UNABLE_TO_GET_QUIZZES);
 		} finally {
 			ConnectionUtil.close(conn, pstmt, resultSet);
 		}
@@ -171,11 +172,12 @@ public class QuizDAOImpl implements QuizDAO {
 		Connection conn = null;
 		try {
 			conn = dataSource.getConnection();
-			quizPool = new ArrayList<QuizPool>();
+			
 			String sqlStmt = "SELECT id,name,max_number_of_questions,quiz_id FROM quiz_pools WHERE quiz_id = ? LIMIT 5";
 			pstmt = conn.prepareStatement(sqlStmt);
 			pstmt.setInt(1, quizId);
 			resultSet = pstmt.executeQuery();
+			quizPool = new ArrayList<QuizPool>();
 			QuizPool quizPoolObj = null;
 			while(resultSet.next())
 			{
@@ -195,20 +197,20 @@ public class QuizDAOImpl implements QuizDAO {
 		return quizPool;
 	}
 	
-	public List<QuizPoolQuestion> findPoolQuestions(int poolId)
+	public List<QuizPoolQuestion> findPoolQuestions(int poolId) throws DBException
 	{
 		List<QuizPoolQuestion> poolQuestions = null;
 		PreparedStatement pstmt = null;
 		ResultSet resultSet = null;
 		Connection conn = null;
 		try {
-			poolQuestions = new ArrayList<QuizPoolQuestion>();
-			conn = dataSource.getConnection();
-			String sqlStmt = "SELECT id,question_id,quiz_pool_id,is_sticky,is_evaluate FROM quiz_pool_questions WHERE quiz_pool_id = ? LIMIT 5";
-			pstmt = conn.prepareStatement(sqlStmt);
-			pstmt.setInt(1, poolId);
-			resultSet = pstmt.executeQuery();
-			QuizPoolQuestion questions = null;
+				conn = dataSource.getConnection();
+				String sqlStmt = "SELECT id,question_id,quiz_pool_id,is_sticky,is_evaluate FROM quiz_pool_questions WHERE quiz_pool_id = ? LIMIT 5";
+				pstmt = conn.prepareStatement(sqlStmt);
+				pstmt.setInt(1, poolId);
+				resultSet = pstmt.executeQuery();
+				QuizPoolQuestion questions = null;
+				poolQuestions = new ArrayList<QuizPoolQuestion>();
 			while(resultSet.next())
 			{
 				questions = new QuizPoolQuestion();
@@ -222,6 +224,7 @@ public class QuizDAOImpl implements QuizDAO {
 		}catch(SQLException e)
 		{
 			e.printStackTrace();
+			throw new DBException(MessageConstant.UNABLE_TO_GET_POOLS);
 		}finally {
 			ConnectionUtil.close(conn,pstmt,resultSet);
 		}
@@ -236,7 +239,7 @@ public class QuizDAOImpl implements QuizDAO {
 	public Boolean createQuiz(QuizDTO quiz) throws DBException
 	{
 		Connection conn = null;
-		PreparedStatement pstmt = null;
+		PreparedStatement pstmt;
 		Boolean isRowsInserted = false;
 		ResultSet resultSet = null;
 		Integer rowsAffectedQuizPool = null;
@@ -326,6 +329,38 @@ public class QuizDAOImpl implements QuizDAO {
 			pstmt.close();
 			//Create pools
 			List<QuizPool> quizPools = quiz.getQuizPool();
+//			String sqlStmtPools = "INSERT INTO quiz_pools(name,max_number_of_questions,quiz_id)";
+//			StringBuilder poolValues = new StringBuilder();
+//			quizPools.forEach(
+//						(pool) -> {
+//									System.out.println(pool);
+//										poolValues.append("VALUES(").
+//										append(pool.getName()).append(",")
+//										.append(pool.getMaxNumerOfQuestion()).append(",")
+//										.append(quizId);
+//									}
+//					);
+//			quizPools.forEach(
+//						(pool) -> {
+//							String sqlStmtPool = "INSERT INTO quiz_pools("
+//									+ "name,"
+//									+ "max_number_of_questions,"
+//									+ "quiz_id"
+//									+ ")"
+//									+ "VALUES(?,?,?)";
+//							try {
+//								pstmt = conn.prepareStatement(sqlStmtPool);
+//								pstmt.setString(1, pool.getName());
+//								pstmt.setInt(2, pool.getMaxNumerOfQuestion());
+//								pstmt.setInt(3, quizId);
+//								pstmt.executeUpdate();
+//								pstmt.close();
+//							} catch (SQLException e) {
+//								e.printStackTrace();
+//							}
+//							
+//						}
+//					);
 			for(QuizPool quizObj : quizPools)
 			{
 				String sqlStmtPool = "INSERT INTO quiz_pools("
@@ -379,7 +414,7 @@ public class QuizDAOImpl implements QuizDAO {
 			} catch (SQLException e1) {
 				e.printStackTrace();
 			}
-			throw new DBException(e.getMessage());
+			throw new DBException(MessageConstant.UNABLE_TO_CREATE_QUIZ);
 		}
 		finally {
 			ConnectionUtil.close(conn);
