@@ -28,5 +28,22 @@ public class QuizValidator {
 		{
 			throw new ValidationException(MessageConstant.INAVALID_MAX_NO_ATTEMPTS);
 		}
+		if(quiz.getQuiz().getIsAttemptReview() == false && 
+				quiz.getQuiz().getIsShowWhetherCorrect() == true
+				)
+		{
+			throw new ValidationException(MessageConstant.INVALID_IS_SHOW_WHETHER_CORRECT);
+		}
+		if(
+				quiz.getQuiz().getIsAttemptReview() == false &&
+				quiz.getQuiz().getIsShowCorrectAnswer() == true
+				)
+		{
+			throw new ValidatorException(MessageConstant.INVALID_IS_SHOW_CORRECT_ANSWER);
+		}
+		if(quiz.getQuiz().getIsAttemptReview() == false || quiz.getQuiz().getIsShowWhetherCorrect() == false || quiz.getQuiz().getIsShowCorrectAnswer() == false )
+		{
+			throw new ValidatorException(MessageConstant.INVALID_IS_ANSWER_EXPLANATION);
+		}
 	}
 }

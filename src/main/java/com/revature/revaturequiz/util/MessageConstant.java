@@ -10,4 +10,7 @@ public final class MessageConstant {
 	public static final String INAVALID_ACTIVITY_POINTS = "Invalid activity points";
 	public static final String INAVALID_MAX_NO_ATTEMPTS = "Invalid maximum number of attempts";
 	public static final String UNABLE_TO_GET_POOLS = "Unable to get pools";
+	public static final String INVALID_IS_SHOW_WHETHER_CORRECT = "Unable to enable show whether correct";
+	public static final String INVALID_IS_SHOW_CORRECT_ANSWER = "Unable to enable show correct answers";
+	public static final String INVALID_IS_ANSWER_EXPLANATION = "Unable to enable answer explanation";
 }

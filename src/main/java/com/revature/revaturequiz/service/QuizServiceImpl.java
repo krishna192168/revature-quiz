@@ -27,16 +27,23 @@ public class QuizServiceImpl implements QuizService {
 	{
 		List<QuizResponseDTO> quizzesDTO;
 		List<Quiz> quizzes = null;
-		QuizResponseDTO quizResDTO = null;
+		final QuizResponseDTO quizResDTO = new QuizResponseDTO();
 		try {
-			quizResDTO = new QuizResponseDTO();
+//			quizResDTO = new QuizResponseDTO();
 			quizzesDTO = new ArrayList<QuizResponseDTO>();
 			quizzes = quizDAO.findAllQuizzes();
-			for(Quiz quizObj : quizzes)
-			{
-				quizResDTO.setQuiz(quizObj);
-				quizzesDTO.add(quizResDTO);
-			}
+//			for(Quiz quizObj : quizzes)
+//			{
+//				quizResDTO.setQuiz(quizObj);
+//				quizzesDTO.add(quizResDTO);
+//			}
+			quizzes.stream()
+			.forEach(
+						(quizObj) -> {
+							quizResDTO.setQuiz(quizObj);
+							quizzesDTO.add(quizResDTO);
+						}
+					);
 			if(quizzesDTO.isEmpty())
 			{
 				throw new ServiceException(MessageConstant.UNABLE_TO_GET_QUIZZES);
@@ -65,6 +72,14 @@ public class QuizServiceImpl implements QuizService {
 				poolQuestion = quizDAO.findPoolQuestions(poolId);
 				poolResponseObj.setPoolQuestions(poolQuestion);
 			}
+//			pools.stream()
+//			.forEach(
+//					(poolObj) -> {
+//						poolId = poolObj.getId();
+//						poolQuestion = quizDAO.findPoolQuestions(poolId);
+//						poolResponseObj.setPoolQuestions(poolQuestion);
+//					}
+//					);
 		}
 		catch(DBException e)
 		{

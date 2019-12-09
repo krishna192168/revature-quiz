@@ -20,11 +20,11 @@ import com.revature.revaturequiz.service.QuizService;
 import com.revature.revaturequiz.util.MessageConstant;
 
 @RestController
-@RequestMapping("/quiz")
+@RequestMapping("/")
 public class QuizController {
 	@Autowired
 	private QuizService quizService;
-	@GetMapping("/list")
+	@GetMapping("/quizzes")
 	public ResponseEntity<Object> findAllQuizzes()
 	{
 		List<QuizResponseDTO> quizzesList = null;
@@ -34,22 +34,20 @@ public class QuizController {
 		}
 		catch(ServiceException exception)
 		{
-			System.err.println(exception.getMessage());
 			return new ResponseEntity<>(exception.getMessage(),HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PostMapping("/")
+	@PostMapping("/quiz")
 	public ResponseEntity<Object> createQuiz(@RequestBody QuizDTO quiz)
 	{
 		 try {
 			quizService.createQuiz(quiz);
 			return new ResponseEntity<>(MessageConstant.SUCCESSFULLY_QUIZ_CREATED,HttpStatus.OK);
 		} catch (ServiceException e) {
-			e.printStackTrace();
 			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
 		}
 	}
-	@GetMapping("/{quizId}")
+	@GetMapping("/pools/{quizId}")
 	public ResponseEntity<Object> findPoolByQuizId(@PathVariable("quizId") int quizId)
 	{
 		PoolResponseDTO poolResponse = null;

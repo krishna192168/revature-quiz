@@ -1,6 +1,6 @@
 package com.revature.revaturequiz.service;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -16,8 +16,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.revature.revaturequiz.dao.QuizDAO;
 import com.revature.revaturequiz.dto.QuizResponseDTO;
+import com.revature.revaturequiz.exception.DBException;
 import com.revature.revaturequiz.exception.ServiceException;
 import com.revature.revaturequiz.model.Quiz;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class ServiceTest {
@@ -35,22 +37,39 @@ public class ServiceTest {
 	public void testFindAllQuizzes()
 	{
 		try {
+			//Service
 			List<QuizResponseDTO> quizzesDTO = new ArrayList<QuizResponseDTO>();
-			Quiz quizObjA = new Quiz();
-			quizObjA.setId(1);
-			quizObjA.setCreatedBy("krishna");
+			//DAO
+			List<Quiz> quizzesData = new ArrayList<Quiz>();
 			
-			QuizResponseDTO quizDTOObjA = new QuizResponseDTO();
-			quizDTOObjA.setQuiz(quizObjA);
+			Quiz quizObj = new Quiz();
+			quizObj.setId(1);
+			quizObj.setCreatedBy("krishna");
 			
-			quizzesDTO.add(quizDTOObjA);
+			quizzesData.add(quizObj);
 			
-			when(quizService.findAllQuizzes())
-			.thenThrow(ServiceException.class);
+			QuizResponseDTO quizDTOObj = new QuizResponseDTO();
 			
-			assertEquals(quizzesDTO,quizService.findAllQuizzes());
 			
-		} catch (ServiceException e) {
+			for(Quiz quiz : quizzesData)
+			{
+				quizDTOObj.setQuiz(quiz);
+				quizzesDTO.add(quizDTOObj);
+			}
+			
+			
+			when(quizDAO.findAllQuizzes()).thenReturn(quizzesData);
+			List<QuizResponseDTO> quizzes = quizService.findAllQuizzes();
+			quizzesDTO.forEach(
+					(quiz) ->{
+						System.err.println(quiz);
+					}
+				);
+			assertSame(quizzesDTO,quizzes);
+//			assertNotNull(quizzesDTO);
+			
+			
+		} catch (DBException | ServiceException e) {
 			System.err.println(e.getMessage());
 		}
 	}
