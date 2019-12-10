@@ -52,7 +52,7 @@ public class QuizController {
 	{
 		PoolResponseDTO poolResponse = null;
 		try {
-			poolResponse = quizService.findPoolByQuizId(quizId);
+			poolResponse = quizService.findPoolsByQuizId(quizId);
 			return new ResponseEntity<>(poolResponse,HttpStatus.OK);
 		}
 		catch(ServiceException e) {

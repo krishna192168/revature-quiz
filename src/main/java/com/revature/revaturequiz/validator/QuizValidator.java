@@ -41,9 +41,9 @@ public class QuizValidator {
 		{
 			throw new ValidatorException(MessageConstant.INVALID_IS_SHOW_CORRECT_ANSWER);
 		}
-		if(quiz.getQuiz().getIsAttemptReview() == false || quiz.getQuiz().getIsShowWhetherCorrect() == false || quiz.getQuiz().getIsShowCorrectAnswer() == false )
-		{
-			throw new ValidatorException(MessageConstant.INVALID_IS_ANSWER_EXPLANATION);
-		}
+//		if(quiz.getQuiz().getIsAttemptReview() == false || quiz.getQuiz().getIsShowWhetherCorrect() == false && quiz.getQuiz().getIsShowCorrectAnswer() == true )
+//		{
+//			throw new ValidatorException(MessageConstant.INVALID_IS_ANSWER_EXPLANATION);
+//		}
 	}
 }

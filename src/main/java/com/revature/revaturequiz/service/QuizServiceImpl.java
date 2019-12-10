@@ -29,14 +29,8 @@ public class QuizServiceImpl implements QuizService {
 		List<Quiz> quizzes = null;
 		final QuizResponseDTO quizResDTO = new QuizResponseDTO();
 		try {
-//			quizResDTO = new QuizResponseDTO();
 			quizzesDTO = new ArrayList<QuizResponseDTO>();
 			quizzes = quizDAO.findAllQuizzes();
-//			for(Quiz quizObj : quizzes)
-//			{
-//				quizResDTO.setQuiz(quizObj);
-//				quizzesDTO.add(quizResDTO);
-//			}
 			quizzes.stream()
 			.forEach(
 						(quizObj) -> {
@@ -53,17 +47,17 @@ public class QuizServiceImpl implements QuizService {
 		}
 		return quizzesDTO;
 	}
-	public PoolResponseDTO findPoolByQuizId(int quizId) throws ServiceException
+	public PoolResponseDTO findPoolsByQuizId(int quizId) throws ServiceException
 	{
 		List<QuizPool> pools = null;
 		List<QuizPoolQuestion> poolQuestion = null;
 		PoolResponseDTO poolResponseObj = new PoolResponseDTO();
 		try {
 			Integer poolId = null;
-			pools = quizDAO.findPools(quizId);
+			pools = quizDAO.findPoolsByQuizId(quizId);
 			if(pools.isEmpty())
 			{
-				throw new ServiceException(MessageConstant.UNABLE_TO_GET_POOLS);	
+				throw new ServiceException(MessageConstant.UNABLE_TO_GET_POOLS);
 			}
 			poolResponseObj.setPools(pools);
 			for(QuizPool poolObj : pools)

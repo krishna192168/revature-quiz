@@ -163,8 +163,9 @@ public class QuizDAOImpl implements QuizDAO {
 	}
 	/**
 	 * Find all quiz pools
+	 * @throws DBException 
 	 * */
-	public List<QuizPool> findPools(int quizId)
+	public List<QuizPool> findPoolsByQuizId(int quizId) throws DBException
 	{
 		List<QuizPool> quizPool = null;
 		PreparedStatement pstmt = null;
@@ -191,6 +192,7 @@ public class QuizDAOImpl implements QuizDAO {
 		} catch(SQLException e)
 		{
 			e.printStackTrace();
+			throw new DBException(MessageConstant.UNABLE_TO_GET_QUIZ_POOL);
 		}finally {
 			ConnectionUtil.close(conn,pstmt,resultSet);
 		}

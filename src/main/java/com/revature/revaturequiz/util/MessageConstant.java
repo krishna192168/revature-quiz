@@ -13,4 +13,5 @@ public final class MessageConstant {
 	public static final String INVALID_IS_SHOW_WHETHER_CORRECT = "Unable to enable show whether correct";
 	public static final String INVALID_IS_SHOW_CORRECT_ANSWER = "Unable to enable show correct answers";
 	public static final String INVALID_IS_ANSWER_EXPLANATION = "Unable to enable answer explanation";
+	public static final String UNABLE_TO_GET_QUIZ_POOL = "Unable to get quiz pool details";
 }
