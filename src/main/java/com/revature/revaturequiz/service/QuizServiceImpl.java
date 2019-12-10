@@ -15,7 +15,6 @@ import com.revature.revaturequiz.exception.ServiceException;
 import com.revature.revaturequiz.exception.ValidatorException;
 import com.revature.revaturequiz.model.Quiz;
 import com.revature.revaturequiz.model.QuizPool;
-import com.revature.revaturequiz.model.QuizPoolQuestion;
 import com.revature.revaturequiz.util.MessageConstant;
 import com.revature.revaturequiz.validator.QuizValidator;
 
@@ -25,12 +24,10 @@ public class QuizServiceImpl implements QuizService {
 	private QuizDAO quizDAO;
 	public List<QuizResponseDTO> findAllQuizzes() throws ServiceException
 	{
-		List<QuizResponseDTO> quizzesDTO;
-		List<Quiz> quizzes = null;
+		final List<QuizResponseDTO> quizzesDTO = new ArrayList<>();
 		final QuizResponseDTO quizResDTO = new QuizResponseDTO();
 		try {
-			quizzesDTO = new ArrayList<QuizResponseDTO>();
-			quizzes = quizDAO.findAllQuizzes();
+			List<Quiz> quizzes = quizDAO.findAllQuizzes();
 			quizzes.stream()
 			.forEach(
 						(quizObj) -> {
@@ -38,42 +35,32 @@ public class QuizServiceImpl implements QuizService {
 							quizzesDTO.add(quizResDTO);
 						}
 					);
-			if(quizzesDTO.isEmpty())
-			{
-				throw new ServiceException(MessageConstant.UNABLE_TO_GET_QUIZZES);
-			}
 		} catch (DBException e) {
 			throw new ServiceException(e.getMessage());
 		}
 		return quizzesDTO;
 	}
-	public PoolResponseDTO findPoolsByQuizId(int quizId) throws ServiceException
+	public PoolResponseDTO findPoolsByQuizId(final int quizId) throws ServiceException
 	{
-		List<QuizPool> pools = null;
-		List<QuizPoolQuestion> poolQuestion = null;
-		PoolResponseDTO poolResponseObj = new PoolResponseDTO();
+		
+		final PoolResponseDTO poolResponseObj = new PoolResponseDTO();
 		try {
-			Integer poolId = null;
-			pools = quizDAO.findPoolsByQuizId(quizId);
+			final List<QuizPool> pools = quizDAO.findPoolsByQuizId(quizId);
 			if(pools.isEmpty())
 			{
 				throw new ServiceException(MessageConstant.UNABLE_TO_GET_POOLS);
 			}
 			poolResponseObj.setPools(pools);
-			for(QuizPool poolObj : pools)
-			{
-				poolId = poolObj.getId();
-				poolQuestion = quizDAO.findPoolQuestions(poolId);
-				poolResponseObj.setPoolQuestions(poolQuestion);
-			}
-//			pools.stream()
-//			.forEach(
-//					(poolObj) -> {
-//						poolId = poolObj.getId();
-//						poolQuestion = quizDAO.findPoolQuestions(poolId);
-//						poolResponseObj.setPoolQuestions(poolQuestion);
-//					}
-//					);
+			pools.stream()
+			.forEach(
+					(poolObj) -> {
+						try {
+							poolResponseObj.setPoolQuestions(quizDAO.findPoolQuestions(poolObj.getId()));
+						} catch (DBException e) {
+							e.printStackTrace();
+						}
+					}
+					);
 		}
 		catch(DBException e)
 		{
@@ -88,7 +75,7 @@ public class QuizServiceImpl implements QuizService {
 			//Call create Quiz method in dao
 			QuizValidator.quizValidator(quiz);
 			isQuizCreated = quizDAO.createQuiz(quiz);
-			if(isQuizCreated == false)
+			if(Boolean.FALSE.equals(isQuizCreated))
 			{
 				throw new ServiceException(MessageConstant.UNABLE_TO_CREATE_QUIZ);
 			}

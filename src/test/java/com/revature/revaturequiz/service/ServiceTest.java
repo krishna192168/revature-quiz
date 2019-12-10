@@ -7,12 +7,10 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.revature.revaturequiz.dao.QuizDAO;
@@ -33,11 +31,12 @@ public class ServiceTest {
 	private QuizServiceImpl quizService;
 	@Mock
 	private QuizDAO quizDAO;
-	@Before
-	public void mockSetup()
-	{
-		MockitoAnnotations.initMocks(this);
-	}
+	//JUnit runner replace explicit initMocks call
+//	@Before
+//	public void mockSetup()
+//	{
+//		MockitoAnnotations.initMocks(this);
+//	}
 	//Here test find all quizzes
 	@Test
 	public void testFindAllQuizzes()
@@ -63,7 +62,7 @@ public class ServiceTest {
 				quizzesDTO.add(quizDTOObj);
 			}
 			
-			//Here mock dao
+			//Here mock dao method findAllQuizzes
 			when(quizDAO.findAllQuizzes()).thenReturn(quizzesData);
 			List<QuizResponseDTO> quizzes = quizService.findAllQuizzes();
 
@@ -138,5 +137,12 @@ public class ServiceTest {
 		} catch (DBException | ServiceException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Test(expected = ServiceException.class)
+	public void negativeTestFindAllQuizzes() throws DBException, ServiceException
+	{
+			when(quizDAO.findAllQuizzes()).thenThrow(ServiceException.class);
+			quizService.findAllQuizzes();
 	}
 }
