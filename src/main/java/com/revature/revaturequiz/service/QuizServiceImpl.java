@@ -17,7 +17,6 @@ import com.revature.revaturequiz.model.Quiz;
 import com.revature.revaturequiz.model.QuizPool;
 import com.revature.revaturequiz.util.MessageConstant;
 import com.revature.revaturequiz.validator.QuizValidator;
-
 @Service
 public class QuizServiceImpl implements QuizService {
 	@Autowired

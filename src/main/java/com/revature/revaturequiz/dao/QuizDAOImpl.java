@@ -25,13 +25,11 @@ import com.revature.revaturequiz.model.QuizPool;
 import com.revature.revaturequiz.model.QuizPoolQuestion;
 import com.revature.revaturequiz.util.ConnectionUtil;
 import com.revature.revaturequiz.util.MessageConstant;
-
 @Repository
 public class QuizDAOImpl implements QuizDAO {
 	@Autowired
 	private DataSource dataSource;
-	
-	Logger quizLogger = LoggerFactory.getLogger("QuizDAO");
+	private final Logger quizLogger = LoggerFactory.getLogger("QuizDAO");
 	
 	public List<Quiz> findAllQuizzes() throws DBException {
 		Connection conn = null;
@@ -40,8 +38,9 @@ public class QuizDAOImpl implements QuizDAO {
 		List<Quiz> quizzes = null;
 
 		try {
+			quizLogger.info("Start find all quizzes");
 			conn = dataSource.getConnection();
-			quizzes = new ArrayList<Quiz>();
+			quizzes = new ArrayList<>();
 			String sqlStmt = "SELECT quiz.id,"
 					+ "quiz.name AS quiz_name,"
 					+ "quiz.tags,"
@@ -172,6 +171,7 @@ public class QuizDAOImpl implements QuizDAO {
 		ResultSet resultSet = null;
 		Connection conn = null;
 		try {
+			quizLogger.info("Start find pools by id");
 			conn = dataSource.getConnection();
 			
 			String sqlStmt = "SELECT id,name,max_number_of_questions,quiz_id FROM quiz_pools WHERE quiz_id = ? LIMIT 5";
@@ -191,7 +191,7 @@ public class QuizDAOImpl implements QuizDAO {
 			}
 		} catch(SQLException e)
 		{
-			e.printStackTrace();
+			quizLogger.debug(e.getMessage(),e);
 			throw new DBException(MessageConstant.UNABLE_TO_GET_QUIZ_POOL);
 		}finally {
 			ConnectionUtil.close(conn,pstmt,resultSet);
@@ -206,13 +206,14 @@ public class QuizDAOImpl implements QuizDAO {
 		ResultSet resultSet = null;
 		Connection conn = null;
 		try {
+				quizLogger.info("Start find pool questions");
 				conn = dataSource.getConnection();
 				String sqlStmt = "SELECT id,question_id,quiz_pool_id,is_sticky,is_evaluate FROM quiz_pool_questions WHERE quiz_pool_id = ? LIMIT 5";
 				pstmt = conn.prepareStatement(sqlStmt);
 				pstmt.setInt(1, poolId);
 				resultSet = pstmt.executeQuery();
 				QuizPoolQuestion questions = null;
-				poolQuestions = new ArrayList<QuizPoolQuestion>();
+				poolQuestions = new ArrayList<>();
 			while(resultSet.next())
 			{
 				questions = new QuizPoolQuestion();
@@ -225,7 +226,7 @@ public class QuizDAOImpl implements QuizDAO {
 			}
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			quizLogger.debug(e.getMessage(),e);
 			throw new DBException(MessageConstant.UNABLE_TO_GET_POOLS);
 		}finally {
 			ConnectionUtil.close(conn,pstmt,resultSet);
@@ -249,6 +250,7 @@ public class QuizDAOImpl implements QuizDAO {
 		Integer rowsAffectedQuiz = null;
 		Savepoint createQuiz = null;
 		try {
+			quizLogger.info("Start create quiz");
 			conn = dataSource.getConnection();
 			//Set auto commit off
 			conn.setAutoCommit(false);
@@ -411,10 +413,11 @@ public class QuizDAOImpl implements QuizDAO {
 		}
 		catch(SQLException e)
 		{
+			quizLogger.debug(e.getMessage(),e);
 			try {
 				conn.rollback(createQuiz);
 			} catch (SQLException e1) {
-				e.printStackTrace();
+				quizLogger.debug(e.getMessage(),e);
 			}
 			throw new DBException(MessageConstant.UNABLE_TO_CREATE_QUIZ);
 		}

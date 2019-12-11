@@ -7,6 +7,8 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.ValidationException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -142,7 +144,25 @@ public class ServiceTest {
 	@Test(expected = ServiceException.class)
 	public void negativeTestFindAllQuizzes() throws DBException, ServiceException
 	{
-			when(quizDAO.findAllQuizzes()).thenThrow(ServiceException.class);
+			when(quizDAO.findAllQuizzes()).thenThrow(DBException.class);
 			quizService.findAllQuizzes();
+	}
+	@Test(expected = ServiceException.class)
+	public void negativetestFindPoolByQuizId() throws DBException, ServiceException
+	{
+		when(quizDAO.findPoolsByQuizId(1)).thenThrow(DBException.class);
+		quizService.findPoolsByQuizId(1);
+	}
+	@Test(expected = ValidationException.class)
+	public void negativetestCreateQuiz() throws DBException, ServiceException
+	{
+		Quiz quizObj = new Quiz();
+		
+		quizObj.setId(1);
+		quizObj.setName("java");
+		quizObj.setTags("java,core java");
+		QuizDTO quiz = new QuizDTO();
+		quiz.setQuiz(quizObj);
+		quizService.createQuiz(quiz);
 	}
 }

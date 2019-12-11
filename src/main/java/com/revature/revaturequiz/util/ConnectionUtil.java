@@ -6,7 +6,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ConnectionUtil {
+	
 	private ConnectionUtil() {}
+	
+	static ConnectionUtil conn = null;
+	
+	public static ConnectionUtil getInstance()
+	{
+		if(conn == null)
+		{
+			return new ConnectionUtil();
+		} else {
+			return conn;
+		}
+	}
+	
 	public static void close(Connection conn)
 	{
 		try {

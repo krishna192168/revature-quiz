@@ -21,7 +21,7 @@ public class QuizValidator {
 		{
 			throw new ValidationException(MessageConstant.INAVALID_TAG);
 		}
-		if(quiz.getQuiz().getActivityPoints() < 0)
+		if(StringUtils.isEmpty(quiz.getQuiz().getActivityPoints()) || quiz.getQuiz().getActivityPoints() < 0)
 		{
 			throw new ValidationException(MessageConstant.INAVALID_ACTIVITY_POINTS);
 		}

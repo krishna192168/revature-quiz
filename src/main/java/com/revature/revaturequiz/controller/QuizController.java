@@ -24,6 +24,11 @@ import com.revature.revaturequiz.util.MessageConstant;
 public class QuizController {
 	@Autowired
 	private QuizService quizService;
+	
+//	public void setQuizService(QuizService quizService)
+//	{
+//		this.quizService = quizService;
+//	}
 	@GetMapping("/quizzes")
 	public ResponseEntity<Object> findAllQuizzes()
 	{
