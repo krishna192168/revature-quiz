@@ -102,7 +102,6 @@ public class ServiceTest {
 			
 			poolResponseObj = quizService.findPoolsByQuizId(1);
 			
-			System.err.println(poolResponseObj);
 			assertEquals(poolResponseDTO, poolResponseObj);
 			
 		} catch (DBException | ServiceException e) {

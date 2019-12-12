@@ -35,7 +35,7 @@ public class QuizValidator {
 		{
 			throw new ValidationException(MessageConstant.INVALID_IS_SHOW_WHETHER_CORRECT);
 		}
-		if(Boolean.FALSE.equals(quiz.getQuiz().getIsAttemptReview() && Boolean.TRUE.equals(quiz.getQuiz().getIsShowCorrectAnswer())))
+		if(quiz.getQuiz().getIsAttemptReview() == false && quiz.getQuiz().getIsShowCorrectAnswer() == true)
 		{
 			throw new ValidatorException(MessageConstant.INVALID_IS_SHOW_CORRECT_ANSWER);
 		}

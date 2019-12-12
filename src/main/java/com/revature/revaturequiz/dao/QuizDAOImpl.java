@@ -242,7 +242,7 @@ public class QuizDAOImpl implements QuizDAO {
 	public Boolean createQuiz(QuizDTO quiz) throws DBException
 	{
 		Connection conn = null;
-		PreparedStatement pstmt;
+		PreparedStatement pstmt = null;
 		Boolean isRowsInserted = false;
 		ResultSet resultSet = null;
 		Integer rowsAffectedQuizPool = null;
@@ -332,6 +332,7 @@ public class QuizDAOImpl implements QuizDAO {
 			resultSet.close();
 			pstmt.close();
 			//Create pools
+			//Here get pool detatils using quiz dto
 			List<QuizPool> quizPools = quiz.getQuizPool();
 //			String sqlStmtPools = "INSERT INTO quiz_pools(name,max_number_of_questions,quiz_id)";
 //			StringBuilder poolValues = new StringBuilder();
@@ -365,6 +366,7 @@ public class QuizDAOImpl implements QuizDAO {
 //							
 //						}
 //					);
+			
 			for(QuizPool quizObj : quizPools)
 			{
 				String sqlStmtPool = "INSERT INTO quiz_pools("
@@ -404,11 +406,12 @@ public class QuizDAOImpl implements QuizDAO {
 				rowsAffectedPoolQuestions = pstmt.executeUpdate();
 				pstmt.close();
 			}
-			//Here change record has permanent
-			conn.commit();
+			
 			if(rowsAffectedQuiz == 1 && rowsAffectedPoolQuestions == 1 && rowsAffectedQuizPool == 1)
 			{
 				isRowsInserted = true;
+				//Here change record has permanent
+				conn.commit();
 			}
 		}
 		catch(SQLException e)
