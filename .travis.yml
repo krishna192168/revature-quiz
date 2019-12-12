@@ -1,14 +1,13 @@
 language: java
 
+jdk:
+  - oraclejdk8
+
 addons:
   sonarcloud:
     organization: "krishna192168"
     token:
       secure: 3e22e8dd6c74fc4eb2510a3dd4c7268e1405ae54 # sonor encrypted token
-
-jdk:
-  - oraclejdk8
-  - openjdk8
 
 script:
   # here builds the project, runs the tests with coverage and then execute the SonarCloud analysis
