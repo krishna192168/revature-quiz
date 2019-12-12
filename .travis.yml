@@ -11,6 +11,6 @@ script:
   - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=revature-quiz
 notifications:
   email:
-  - krishnamoorthy.bavanudoss@revature.com
-  - ragavanpv@revature.com
+    - krishnamoorthy.bavanudoss@revature.com
+    - ragavanpv@revature.com
   
