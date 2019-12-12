@@ -51,10 +51,6 @@ public class QuizServiceImpl implements QuizService {
 		try {
 			serviceLogger.info("Start find pools by id");
 			final List<QuizPool> pools = quizDAO.findPoolsByQuizId(quizId);
-			if(pools.isEmpty())
-			{
-				throw new ServiceException(MessageConstant.UNABLE_TO_GET_POOLS);
-			}
 			poolResponseObj.setPools(pools);
 			pools.stream()
 			.forEach(
@@ -62,7 +58,7 @@ public class QuizServiceImpl implements QuizService {
 						try {
 							poolResponseObj.setPoolQuestions(quizDAO.findPoolQuestions(poolObj.getId()));
 						} catch (DBException e) {
-							e.printStackTrace();
+							serviceLogger.error(e.getMessage(),e);
 						}
 					}
 					);
@@ -79,13 +75,9 @@ public class QuizServiceImpl implements QuizService {
 		Boolean isQuizCreated = null;
 		try {
 			serviceLogger.info("Start create quiz");
-			//Call create Quiz method in dao
+			//Call create Quiz method in quizdao
 			QuizValidator.quizValidator(quiz);
 			isQuizCreated = quizDAO.createQuiz(quiz);
-			if(Boolean.FALSE.equals(isQuizCreated))
-			{
-				throw new ServiceException(MessageConstant.UNABLE_TO_CREATE_QUIZ);
-			}
 		}catch(ValidatorException | DBException e) {
 			serviceLogger.error(e.getMessage(),e);
 			throw new ServiceException(e.getMessage());

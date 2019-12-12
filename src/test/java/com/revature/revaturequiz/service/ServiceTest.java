@@ -12,6 +12,7 @@ import javax.validation.ValidationException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -129,7 +130,7 @@ public class ServiceTest {
 			quizDTO.setQuiz(quizObj);
 			Boolean isQuizCreated = false;
 			
-			when(quizDAO.createQuiz(quizDTO)).thenReturn(true);
+			when(quizDAO.createQuiz(Matchers.any(QuizDTO.class))).thenReturn(true);
 			
 			isQuizCreated = quizService.createQuiz(quizDTO);
 			
@@ -149,7 +150,7 @@ public class ServiceTest {
 	@Test(expected = ServiceException.class)
 	public void negativetestFindPoolByQuizId() throws DBException, ServiceException
 	{
-		when(quizDAO.findPoolsByQuizId(1)).thenThrow(DBException.class);
+		when(quizDAO.findPoolsByQuizId(Matchers.anyInt())).thenThrow(DBException.class);
 		quizService.findPoolsByQuizId(1);
 	}
 	@Test(expected = ValidationException.class)
