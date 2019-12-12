@@ -1,0 +1,13 @@
+language: java
+
+addons:
+  sonarcloud:
+    organization: "krishna192168"
+    token:
+      secure: 3e22e8dd6c74fc4eb2510a3dd4c7268e1405ae54 # sonor encrypted token
+
+script:
+  # the following command line builds the project, runs the tests with coverage and then execute the SonarCloud analysis
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=revature-quiz
+notifications:
+  email:krishnamoorthy.bavanudoss@revature.com
