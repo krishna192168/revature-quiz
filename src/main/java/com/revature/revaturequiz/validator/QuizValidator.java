@@ -1,5 +1,7 @@
 package com.revature.revaturequiz.validator;
 
+import java.util.regex.Pattern;
+
 import javax.validation.ValidationException;
 
 import org.springframework.util.StringUtils;
@@ -16,6 +18,10 @@ public class QuizValidator {
 		if(StringUtils.isEmpty(quiz.getQuiz().getName()))
 		{
 			throw new ValidationException(MessageConstant.INAVALID_QUIZ_NAME);
+		}
+		if(Pattern.matches("[a-zA-Z0-9]*", quiz.getQuiz().getName()))
+		{
+			throw new ValidatorException(MessageConstant.INAVALID_QUIZ_NAME);
 		}
 		if(StringUtils.isEmpty(quiz.getQuiz().getTags()))
 		{

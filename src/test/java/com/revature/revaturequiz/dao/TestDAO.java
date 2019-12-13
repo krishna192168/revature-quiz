@@ -1,11 +1,14 @@
 package com.revature.revaturequiz.dao;
-
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -20,6 +23,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.revature.revaturequiz.dto.QuizDTO;
 import com.revature.revaturequiz.exception.DBException;
 import com.revature.revaturequiz.model.Quiz;
+import com.revature.revaturequiz.model.QuizPool;
+import com.revature.revaturequiz.model.QuizPoolQuestion;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestDAO {
@@ -41,31 +46,46 @@ public class TestDAO {
 	@Before
 	public void setup() throws SQLException
 	{
-		
-		
 		when(dataSource.getConnection()).thenReturn(conn);
 		when(conn.prepareStatement(Matchers.anyString())).thenReturn(pstmt);
 		when(pstmt.executeQuery()).thenReturn(resultSet);
-		when(resultSet.next()).thenReturn(Boolean.FALSE);
+		when(pstmt.executeUpdate()).thenReturn(1);
+		when(resultSet.getInt(Matchers.anyString())).thenReturn(1);
 	}
 
 	@Test
-	public void testFindAllQuizzes() throws DBException
+	public void testFindAllQuizzes() throws DBException, SQLException
 	{
-		quizDAO.findAllQuizzes();
-	}
-	@Test
-	public void testFindPoolsByQuizId() throws DBException
-	{
-		quizDAO.findPoolsByQuizId(1);
-	}
-	@Test
-	public void testCreateQuiz() throws SQLException, DBException
-	{
+		when(resultSet.next()).thenReturn(Boolean.FALSE);
 		Quiz quizObj = new Quiz();
 		quizObj.setId(1);
 		quizObj.setName("java");
 		quizObj.setTags("java,core java");
+//		when(quizDAO.toRow(resultSet)).thenReturn(quizObj);
+		
+		List<Quiz> quizzes = new ArrayList<Quiz>();
+		
+		quizzes = quizDAO.findAllQuizzes();
+		System.err.println(quizzes);
+		assertNotNull(quizzes);
+	}
+	@Test
+	public void testFindPoolsByQuizId() throws DBException
+	{
+		List<QuizPool> quizPool = quizDAO.findPoolsByQuizId(1);
+		assertNotNull(quizPool);
+	}
+	@Test
+	public void testCreateQuiz() throws SQLException, DBException
+	{
+		when(pstmt.executeUpdate()).thenReturn(1);
+		when(resultSet.next()).thenReturn(Boolean.TRUE);
+		when(resultSet.getInt(Matchers.anyString())).thenReturn(1);
+		//Set quiz details
+		Quiz quizObj = new Quiz();
+		quizObj.setId(1);
+		quizObj.setName("nodejs1");
+		quizObj.setTags("nodejs,core nodejs");
 		quizObj.setActivityPoints(80);
 		quizObj.setLevelId(1);
 		quizObj.setCategoryId(1);
@@ -84,8 +104,32 @@ public class TestDAO {
 		quizObj.setIsSlugUrlAccess(false);
 		QuizDTO quizDTO = new QuizDTO();
 		quizDTO.setQuiz(quizObj);
-		when(pstmt.executeUpdate()).thenReturn(1);
 		
-		quizDAO.createQuiz(quizDTO);
+		//Set pool details
+		QuizPool pool = new QuizPool();
+		pool.setMaxNumerOfQuestion(10);
+		pool.setName("nodejs pool");
+		pool.setQuizId(1);
+		
+		//Set pool questions
+		QuizPoolQuestion poolQuestion = new QuizPoolQuestion();
+		poolQuestion.setId(1);
+		poolQuestion.setIsEvaluate(false);
+		poolQuestion.setIsSticky(false);
+		poolQuestion.setQuestionId(1);
+		poolQuestion.setQuizPoolId(1);
+		
+		//Pool details
+		List<QuizPool> quizPool = new ArrayList<>();
+		quizPool.add(pool);
+		
+		//Quiz details
+		List<QuizPoolQuestion> poolQuestions = new ArrayList<QuizPoolQuestion>();
+		
+		quizDTO.setQuizPool(quizPool);
+		quizDTO.setPoolQuestions(poolQuestions);
+		
+		Boolean isQuizCreated = quizDAO.createQuiz(quizDTO);
+		assertTrue(isQuizCreated);
 	}
 }

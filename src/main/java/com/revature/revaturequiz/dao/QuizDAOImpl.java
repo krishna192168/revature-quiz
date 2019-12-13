@@ -25,53 +25,33 @@ import com.revature.revaturequiz.model.QuizPool;
 import com.revature.revaturequiz.model.QuizPoolQuestion;
 import com.revature.revaturequiz.util.ConnectionUtil;
 import com.revature.revaturequiz.util.MessageConstant;
+
 @Repository
 public class QuizDAOImpl implements QuizDAO {
 	@Autowired
 	private DataSource dataSource;
 	private final Logger quizLogger = LoggerFactory.getLogger("QuizDAO");
-	
+
 	public List<Quiz> findAllQuizzes() throws DBException {
 		Connection conn = null;
-		PreparedStatement pstmt = null;
+ 		PreparedStatement pstmt = null;
 		ResultSet resultSet = null;
 		List<Quiz> quizzes = null;
 
 		try {
-			quizLogger.info("Start find all quizzes");
+			quizLogger.info("Find all quizzes");
 			conn = dataSource.getConnection();
 			quizzes = new ArrayList<>();
-			String sqlStmt = "SELECT quiz.id,"
-					+ "quiz.name AS quiz_name,"
-					+ "quiz.tags,"
-					+ "quiz.activity_point,"
-					+ "quiz.duration,"
-					+ "quiz.max_number_of_attempts,"
-					+ "quiz.is_level_override,"
-					+ "quiz.slug_url,"
-					+ "quiz.description,"
-					+ "quiz.meta_keywords,"
-					+ "quiz.meta_description,"
-					+ "quiz.icon_url,"
-					+ "quiz.quiz_instructions,"
-					+ "quiz.level_id,"
-					+ "quiz.category_id,"
-					+ "quiz.pass_percentage,"
-					+ "quiz.is_slug_url_access,"
-					+ "quiz.quiz_timer,"
-					+ "quiz.shuffle_question,"
-					+ "quiz.shuffle_answer,"
-					+ "quiz.display_score_result,"
-					+ "quiz.attempt_review,"
-					+ "quiz.show_whether_correct,"
-					+ "quiz.show_correct_answer,"
-					+ "quiz.show_answer_explanation,"
-					+ "quiz.is_save_and_resume,"
-					+ "quiz.created_on,"
+			String sqlStmt = "SELECT quiz.id," + "quiz.name AS quiz_name," + "quiz.tags," + "quiz.activity_point,"
+					+ "quiz.duration," + "quiz.max_number_of_attempts," + "quiz.is_level_override," + "quiz.slug_url,"
+					+ "quiz.description," + "quiz.meta_keywords," + "quiz.meta_description," + "quiz.icon_url,"
+					+ "quiz.quiz_instructions," + "quiz.level_id," + "quiz.category_id," + "quiz.pass_percentage,"
+					+ "quiz.is_slug_url_access," + "quiz.quiz_timer," + "quiz.shuffle_question,"
+					+ "quiz.shuffle_answer," + "quiz.display_score_result," + "quiz.attempt_review,"
+					+ "quiz.show_whether_correct," + "quiz.show_correct_answer," + "quiz.show_answer_explanation,"
+					+ "quiz.is_save_and_resume," + "quiz.created_on,"
 //					+ "quiz.updated_on,"
-					+ "quiz.created_by,"
-					+ "quiz.modified_by "
-					+ "FROM quizzes quiz ORDER BY quiz.created_on LIMIT 5";
+					+ "quiz.created_by," + "quiz.modified_by " + "FROM quizzes quiz ORDER BY quiz.created_on LIMIT 5";
 			pstmt = conn.prepareStatement(sqlStmt);
 			resultSet = pstmt.executeQuery();
 			while (resultSet.next()) {
@@ -86,16 +66,15 @@ public class QuizDAOImpl implements QuizDAO {
 
 		return quizzes;
 	}
-	
-	public Quiz toRow(ResultSet resultSet)
-	{
+
+	public Quiz toRow(ResultSet resultSet) {
 		Quiz quiz = null;
 		try {
 			Integer quizId = resultSet.getInt("id");
 			String quizName = resultSet.getString("quiz_name");
 			String quizTags = resultSet.getString("tags");
 			Integer activityPoints = resultSet.getInt("activity_point");
-			Time duration = resultSet.getTime("duration"); 
+			Time duration = resultSet.getTime("duration");
 			Integer maxNumberOfAttempts = resultSet.getInt("max_number_of_attempts");
 			Boolean isLevelOverride = resultSet.getBoolean("is_level_override");
 			String slugUrl = resultSet.getString("slug_url");
@@ -153,35 +132,35 @@ public class QuizDAOImpl implements QuizDAO {
 //			quiz.setModifiedOn(modifiedOn);
 			quiz.setCreatedBy(createdBy);
 			quiz.setModifiedBy(modifiedBy);
-			
-		} catch(SQLException e) {
+
+		} catch (SQLException e) {
 			quizLogger.error(e.getMessage(), e);
 			e.printStackTrace();
 		}
 		return quiz;
 	}
+
 	/**
 	 * Find all quiz pools
-	 * @throws DBException 
-	 * */
-	public List<QuizPool> findPoolsByQuizId(int quizId) throws DBException
-	{
+	 * 
+	 * @throws DBException
+	 */
+	public List<QuizPool> findPoolsByQuizId(int quizId) throws DBException {
 		List<QuizPool> quizPool = null;
 		PreparedStatement pstmt = null;
 		ResultSet resultSet = null;
 		Connection conn = null;
 		try {
-			quizLogger.info("Start find pools by id");
+			quizLogger.info("Find pools by id");
 			conn = dataSource.getConnection();
-			
+
 			String sqlStmt = "SELECT id,name,max_number_of_questions,quiz_id FROM quiz_pools WHERE quiz_id = ? LIMIT 5";
 			pstmt = conn.prepareStatement(sqlStmt);
 			pstmt.setInt(1, quizId);
 			resultSet = pstmt.executeQuery();
 			quizPool = new ArrayList<QuizPool>();
 			QuizPool quizPoolObj = null;
-			while(resultSet.next())
-			{
+			while (resultSet.next()) {
 				quizPoolObj = new QuizPool();
 				quizPoolObj.setId(resultSet.getInt("id"));
 				quizPoolObj.setName(resultSet.getString("name"));
@@ -189,33 +168,30 @@ public class QuizDAOImpl implements QuizDAO {
 				quizPoolObj.setQuizId(resultSet.getInt("quiz_id"));
 				quizPool.add(quizPoolObj);
 			}
-		} catch(SQLException e)
-		{
-			quizLogger.debug(e.getMessage(),e);
+		} catch (SQLException e) {
+			quizLogger.debug(e.getMessage(), e);
 			throw new DBException(MessageConstant.UNABLE_TO_GET_QUIZ_POOL);
-		}finally {
-			ConnectionUtil.close(conn,pstmt,resultSet);
+		} finally {
+			ConnectionUtil.close(conn, pstmt, resultSet);
 		}
 		return quizPool;
 	}
-	
-	public List<QuizPoolQuestion> findPoolQuestions(int poolId) throws DBException
-	{
+
+	public List<QuizPoolQuestion> findPoolQuestions(int poolId) throws DBException {
 		List<QuizPoolQuestion> poolQuestions = null;
 		PreparedStatement pstmt = null;
 		ResultSet resultSet = null;
 		Connection conn = null;
 		try {
-				quizLogger.info("Start find pool questions");
-				conn = dataSource.getConnection();
-				String sqlStmt = "SELECT id,question_id,quiz_pool_id,is_sticky,is_evaluate FROM quiz_pool_questions WHERE quiz_pool_id = ? LIMIT 5";
-				pstmt = conn.prepareStatement(sqlStmt);
-				pstmt.setInt(1, poolId);
-				resultSet = pstmt.executeQuery();
-				QuizPoolQuestion questions = null;
-				poolQuestions = new ArrayList<>();
-			while(resultSet.next())
-			{
+			quizLogger.info("Find pool questions");
+			conn = dataSource.getConnection();
+			String sqlStmt = "SELECT id,question_id,quiz_pool_id,is_sticky,is_evaluate FROM quiz_pool_questions WHERE quiz_pool_id = ? LIMIT 5";
+			pstmt = conn.prepareStatement(sqlStmt);
+			pstmt.setInt(1, poolId);
+			resultSet = pstmt.executeQuery();
+			QuizPoolQuestion questions = null;
+			poolQuestions = new ArrayList<>();
+			while (resultSet.next()) {
 				questions = new QuizPoolQuestion();
 				questions.setId(resultSet.getInt("id"));
 				questions.setQuestionId(resultSet.getInt("question_id"));
@@ -224,68 +200,41 @@ public class QuizDAOImpl implements QuizDAO {
 				questions.setIsEvaluate(resultSet.getBoolean("is_evaluate"));
 				poolQuestions.add(questions);
 			}
-		}catch(SQLException e)
-		{
-			quizLogger.debug(e.getMessage(),e);
+		} catch (SQLException e) {
+			quizLogger.debug(e.getMessage(), e);
 			throw new DBException(MessageConstant.UNABLE_TO_GET_POOLS);
-		}finally {
-			ConnectionUtil.close(conn,pstmt,resultSet);
+		} finally {
+			ConnectionUtil.close(conn, pstmt, resultSet);
 		}
 		return poolQuestions;
 	}
-	
+
 	/**
 	 * Create create quiz
+	 * 
 	 * @param: QuizDTO=>Quiz details.
 	 * @return: if query successfully created return true or false.
 	 */
-	public Boolean createQuiz(QuizDTO quiz) throws DBException
-	{
+	public Boolean createQuiz(QuizDTO quiz) throws DBException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		Boolean isRowsInserted = false;
 		ResultSet resultSet = null;
-		Integer rowsAffectedQuizPool = null;
-		Integer rowsAffectedPoolQuestions = null;
-		Integer rowsAffectedQuiz = null;
 		Savepoint createQuiz = null;
 		try {
-			quizLogger.info("Start create quiz");
+			quizLogger.info("Create quiz");
 			conn = dataSource.getConnection();
-			//Set auto commit off
+			// Set auto commit off
 			conn.setAutoCommit(false);
-			//Set save point
+			// Set save point
 			createQuiz = conn.setSavepoint("CreateQuiz");
-			String sqlStmt = "INSERT INTO quizzes("
-					+ "name,"
-					+ "tags,"
-					+ "activity_point,"
-					+ "slug_url,"
-					+ "level_id,"
-					+ "category_id,"
-					+ "pass_percentage,"
-					+ "created_by,"
-					+ "max_number_of_attempts,"
-					+ "is_level_override,"
-					+ "description,"
-					+ "meta_keywords,"
-					+ "meta_description,"
-					+ "icon_url,"
-					+ "duration,"
-					+ "quiz_timer,"
-					+ "shuffle_question,"
-					+ "display_score_result,"
-					+ "attempt_review,"
-					+ "show_whether_correct,"
-					+ "show_correct_answer,"
-					+ "show_answer_explanation,"
-					+ "is_save_and_resume,"
-					+ "updated_on,"
-					+ "modified_by,"
-					+ "is_slug_url_access,"
-					+ "created_on,"
-					+ "quiz_instructions"
-					+ ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			String sqlStmt = "INSERT INTO quizzes(" + "name," + "tags," + "activity_point," + "slug_url," + "level_id,"
+					+ "category_id," + "pass_percentage," + "created_by," + "max_number_of_attempts,"
+					+ "is_level_override," + "description," + "meta_keywords," + "meta_description," + "icon_url,"
+					+ "duration," + "quiz_timer," + "shuffle_question," + "display_score_result," + "attempt_review,"
+					+ "show_whether_correct," + "show_correct_answer," + "show_answer_explanation,"
+					+ "is_save_and_resume," + "updated_on," + "modified_by," + "is_slug_url_access," + "created_on,"
+					+ "quiz_instructions" + ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			pstmt = conn.prepareStatement(sqlStmt);
 			pstmt.setString(1, quiz.getQuiz().getName());
 			pstmt.setString(2, quiz.getQuiz().getTags());
@@ -313,26 +262,25 @@ public class QuizDAOImpl implements QuizDAO {
 			pstmt.setBoolean(24, quiz.getQuiz().getIsSaveAndResume());
 			pstmt.setTimestamp(25, quiz.getQuiz().getModifiedOn());
 			pstmt.setBoolean(26, quiz.getQuiz().getIsSlugUrlAccess());
-			//Get current time stamp
+			// Get current time stamp
 			Date date = new Date();
 			Timestamp currentTimestamp = new Timestamp(date.getTime());
 			pstmt.setTimestamp(27, currentTimestamp);
 			pstmt.setString(28, quiz.getQuiz().getQuizInstructions());
-			rowsAffectedQuiz = pstmt.executeUpdate();
+			pstmt.executeUpdate();
 			pstmt.close();
-			//Get quiz last record id
+			// Get quiz last record id
 			Integer quizId = null;
 			String sqlStmtForId = "SELECT LAST_INSERT_ID() AS last_record_id";
 			pstmt = conn.prepareStatement(sqlStmtForId);
 			resultSet = pstmt.executeQuery();
-			if(resultSet.next())
-			{
+			if (resultSet.next()) {
 				quizId = resultSet.getInt("last_record_id");
 			}
 			resultSet.close();
 			pstmt.close();
-			//Create pools
-			//Here get pool detatils using quiz dto
+			// Create pools
+			// Here get pool detatils using quiz dto
 			List<QuizPool> quizPools = quiz.getQuizPool();
 //			String sqlStmtPools = "INSERT INTO quiz_pools(name,max_number_of_questions,quiz_id)";
 //			StringBuilder poolValues = new StringBuilder();
@@ -366,69 +314,56 @@ public class QuizDAOImpl implements QuizDAO {
 //							
 //						}
 //					);
-			
-			for(QuizPool quizObj : quizPools)
-			{
-				String sqlStmtPool = "INSERT INTO quiz_pools("
-						+ "name,"
-						+ "max_number_of_questions,"
-						+ "quiz_id"
-						+ ")"
+
+			for (QuizPool quizObj : quizPools) {
+				String sqlStmtPool = "INSERT INTO quiz_pools(" + "name," + "max_number_of_questions," + "quiz_id" + ")"
 						+ "VALUES(?,?,?)";
 				pstmt = conn.prepareStatement(sqlStmtPool);
 				pstmt.setString(1, quizObj.getName());
 				pstmt.setInt(2, quizObj.getMaxNumerOfQuestion());
 				pstmt.setInt(3, quizId);
-				rowsAffectedQuizPool = pstmt.executeUpdate();
+				pstmt.executeUpdate();
 				pstmt.close();
 			}
-			//Get quiz pool last record id
+			// Get quiz pool last record id
 			Integer quizPoolId = null;
 			String sqlStmtForPoolId = "SELECT LAST_INSERT_ID() AS last_record_id";
 			pstmt = conn.prepareStatement(sqlStmtForPoolId);
 			resultSet = pstmt.executeQuery();
-			if(resultSet.next())
-			{
+			if (resultSet.next()) {
 				quizPoolId = resultSet.getInt("last_record_id");
 			}
 			pstmt.close();
 			resultSet.close();
-			//Create pool question
+			// Create pool question
 			List<QuizPoolQuestion> poolQuestions = quiz.getPoolQuestions();
-			for(QuizPoolQuestion poolQuestion : poolQuestions)
-			{
+			for (QuizPoolQuestion poolQuestion : poolQuestions) {
 				String sqlStmtPoolQuestion = "INSERT INTO quiz_pool_questions(question_id,quiz_pool_id,is_sticky,is_evaluate) VALUES(?,?,?,?)";
 				pstmt = conn.prepareStatement(sqlStmtPoolQuestion);
 				pstmt.setInt(1, poolQuestion.getQuestionId());
 				pstmt.setInt(2, quizPoolId);
 				pstmt.setBoolean(3, poolQuestion.getIsSticky());
 				pstmt.setBoolean(4, poolQuestion.getIsEvaluate());
-				rowsAffectedPoolQuestions = pstmt.executeUpdate();
+				pstmt.executeUpdate();
 				pstmt.close();
 			}
-			
-			if(rowsAffectedQuiz == 1 && rowsAffectedPoolQuestions == 1 && rowsAffectedQuizPool == 1)
-			{
-				isRowsInserted = true;
-				//Here change record has permanent
-				conn.commit();
-			}
-		}
-		catch(SQLException e)
-		{
-			quizLogger.debug(e.getMessage(),e);
+
+			isRowsInserted = true;
+			// Here change record has permanent
+			conn.commit();
+		} catch (SQLException e) {
+			quizLogger.debug(e.getMessage(), e);
 			try {
 				conn.rollback(createQuiz);
 			} catch (SQLException e1) {
-				quizLogger.debug(e.getMessage(),e);
+				quizLogger.debug(e.getMessage(), e);
 			}
 			throw new DBException(MessageConstant.UNABLE_TO_CREATE_QUIZ);
-		}
-		finally {
+		} finally {
 			ConnectionUtil.close(conn);
 		}
 		return isRowsInserted;
 	}
-	//Validate quiz
+	// Validate quiz
 //	public void 
 }

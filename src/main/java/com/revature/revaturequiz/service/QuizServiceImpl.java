@@ -21,12 +21,12 @@ import com.revature.revaturequiz.util.MessageConstant;
 import com.revature.revaturequiz.validator.QuizValidator;
 @Service
 public class QuizServiceImpl implements QuizService {
-	Logger serviceLogger = LoggerFactory.getLogger("QuizService");
+	final Logger serviceLogger = LoggerFactory.getLogger("QuizService");
 	@Autowired
 	private QuizDAO quizDAO;
 	public List<QuizResponseDTO> findAllQuizzes() throws ServiceException
 	{
-		serviceLogger.info("Start find all quizzes");
+		serviceLogger.info("Find all quizzes");
 		final List<QuizResponseDTO> quizzesDTO = new ArrayList<>();
 		final QuizResponseDTO quizResDTO = new QuizResponseDTO();
 		try {
@@ -49,7 +49,7 @@ public class QuizServiceImpl implements QuizService {
 		
 		final PoolResponseDTO poolResponseObj = new PoolResponseDTO();
 		try {
-			serviceLogger.info("Start find pools by id");
+			serviceLogger.info("Find pools by id");
 			final List<QuizPool> pools = quizDAO.findPoolsByQuizId(quizId);
 			poolResponseObj.setPools(pools);
 			pools.stream()
@@ -74,7 +74,7 @@ public class QuizServiceImpl implements QuizService {
 	{
 		Boolean isQuizCreated = null;
 		try {
-			serviceLogger.info("Start create quiz");
+			serviceLogger.info("Create quiz");
 			//Call create Quiz method in quizdao
 			QuizValidator.quizValidator(quiz);
 			isQuizCreated = quizDAO.createQuiz(quiz);
