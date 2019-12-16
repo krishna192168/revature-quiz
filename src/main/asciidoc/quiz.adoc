@@ -1,0 +1,12 @@
+.request
+include::{snippets}/find_all_quizzes/curl-request.adoc[]
+.http-request
+include::{snippets}/find_all_quizzes/http-request.adoc[]
+.http-response
+include::{snippets}/find_all_quizzes/http-response.adoc[]
+.httpie-request
+include::{snippets}/find_all_quizzes/httpie-request.adoc[]
+.request-body
+include::{snippets}/find_all_quizzes/request-body.adoc[]
+.response-body
+include::{snippets}/find_all_quizzes/response-body.adoc[]
