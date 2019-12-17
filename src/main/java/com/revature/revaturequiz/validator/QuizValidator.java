@@ -19,10 +19,10 @@ public class QuizValidator {
 		{
 			throw new ValidationException(MessageConstant.INAVALID_QUIZ_NAME);
 		}
-		if(Pattern.matches("[a-zA-Z0-9]*", quiz.getQuiz().getName()))
-		{
-			throw new ValidatorException(MessageConstant.INAVALID_QUIZ_NAME);
-		}
+//		if(Pattern.matches("[a-zA-Z0-9]*", quiz.getQuiz().getName()))
+//		{
+//			throw new ValidatorException(MessageConstant.INAVALID_QUIZ_NAME);
+//		}
 		if(StringUtils.isEmpty(quiz.getQuiz().getTags()))
 		{
 			throw new ValidationException(MessageConstant.INAVALID_TAG);
