@@ -29,3 +29,17 @@ include::{snippets}/quiz/create_quiz/http-request.adoc[]
 
 ==== HTTP response
 include::{snippets}/quiz/create_quiz/http-response.adoc[]
+
+==== Reuest Fields
+include::{snippets}/quiz/create_quiz/request-fields.adoc[]
+
+=== Find pools
+
+==== Client URL(cURL)
+include::{snippets}/quiz/find_pools/curl-request.adoc[]
+
+==== HTTP request
+include::{snippets}/quiz/find_pools/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/quiz/find_pools/http-response.adoc[]

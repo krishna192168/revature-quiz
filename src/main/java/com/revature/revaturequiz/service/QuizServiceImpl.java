@@ -1,6 +1,7 @@
 package com.revature.revaturequiz.service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -27,15 +28,16 @@ public class QuizServiceImpl implements QuizService {
 	public List<QuizResponseDTO> findAllQuizzes() throws ServiceException
 	{
 		serviceLogger.info("Find all quizzes");
-		final List<QuizResponseDTO> quizzesDTO = new ArrayList<>();
-		final QuizResponseDTO quizResDTO = new QuizResponseDTO();
+		final List<QuizResponseDTO> quizzesDTO = new ArrayList<QuizResponseDTO>();
+		
 		try {
 			List<Quiz> quizzes = quizDAO.findAllQuizzes();
-			quizzes.stream()
-			.forEach(
-						(quizObj) -> {
-							quizResDTO.setQuiz(quizObj);
-							quizzesDTO.add(quizResDTO);
+			
+			quizzes.forEach(
+						(quiz) -> {
+							QuizResponseDTO quizDTO = new QuizResponseDTO();
+							quizDTO.setQuiz(quiz);
+							quizzesDTO.add(quizDTO);
 						}
 					);
 		} catch (DBException e) {

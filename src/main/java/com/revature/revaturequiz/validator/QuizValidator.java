@@ -31,7 +31,7 @@ public class QuizValidator {
 		{
 			throw new ValidationException(MessageConstant.INAVALID_ACTIVITY_POINTS);
 		}
-		if(quiz.getQuiz().getMaxNumbetOfAttempts() < 0)
+		if(quiz.getQuiz().getMaxNumberOfAttempts() < 0)
 		{
 			throw new ValidationException(MessageConstant.INAVALID_MAX_NO_ATTEMPTS);
 		}

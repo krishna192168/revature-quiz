@@ -12,7 +12,7 @@ public class Quiz {
 	private String tags;
 	private Integer activityPoints;
 	private Time duration;
-	private Integer maxNumbetOfAttempts;
+	private Integer maxNumberOfAttempts;
 	private Boolean isLevelOverride;
 	private String slugUrl;
 	private String description;
@@ -24,7 +24,7 @@ public class Quiz {
 	private Integer categoryId;
 	private Integer passPercentage;
 	private Boolean isSlugUrlAccess;
-	private Boolean isQuizTimerEnnable;
+	private Boolean isQuizTimerEnable;
 	private Boolean isShuffleQuestion;
 	private Boolean isShuffleAnswer;
 	private Boolean isDisplayScoreResult;
@@ -35,7 +35,7 @@ public class Quiz {
 	private Boolean isSaveAndResume;
 	private Timestamp createdOn;
 	private Timestamp modifiedOn;
-	private String createdBy;
-	private String modifiedBy;
-	private Boolean isSatus;
+	private Integer createdBy;
+	private Integer modifiedBy;
+	private Boolean isStatus;
 }

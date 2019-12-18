@@ -52,7 +52,7 @@ public class ServiceTest {
 			
 			Quiz quizObj = new Quiz();
 			quizObj.setId(1);
-			quizObj.setCreatedBy("krishna");
+			quizObj.setCreatedBy(1);
 			
 			quizzesData.add(quizObj);
 			
@@ -121,7 +121,7 @@ public class ServiceTest {
 			quizObj.setName("java");
 			quizObj.setTags("java,core java");
 			quizObj.setActivityPoints(80);
-			quizObj.setMaxNumbetOfAttempts(5);
+			quizObj.setMaxNumberOfAttempts(5);
 			quizObj.setIsAttemptReview(false);
 			quizObj.setIsShowWhetherCorrect(false);
 			quizObj.setIsShowCorrectAnswer(false);

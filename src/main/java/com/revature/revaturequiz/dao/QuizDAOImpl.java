@@ -41,7 +41,7 @@ public class QuizDAOImpl implements QuizDAO {
 		try {
 			quizLogger.info("Find all quizzes");
 			conn = dataSource.getConnection();
-			quizzes = new ArrayList<>();
+			quizzes = new ArrayList<Quiz>();
 			String sqlStmt = "SELECT quiz.id," + "quiz.name AS quiz_name," + "quiz.tags," + "quiz.activity_point,"
 					+ "quiz.duration," + "quiz.max_number_of_attempts," + "quiz.is_level_override," + "quiz.slug_url,"
 					+ "quiz.description," + "quiz.meta_keywords," + "quiz.meta_description," + "quiz.icon_url,"
@@ -51,13 +51,13 @@ public class QuizDAOImpl implements QuizDAO {
 					+ "quiz.show_whether_correct," + "quiz.show_correct_answer," + "quiz.show_answer_explanation,"
 					+ "quiz.is_save_and_resume," + "quiz.created_on,"
 //					+ "quiz.updated_on,"
-					+ "quiz.created_by," + "quiz.modified_by " + "FROM quizzes quiz ORDER BY quiz.created_on LIMIT 5";
+					+ "quiz.created_by," + "quiz.modified_by " + "FROM quizzes quiz";
 			pstmt = conn.prepareStatement(sqlStmt);
 			resultSet = pstmt.executeQuery();
 			while (resultSet.next()) {
 				quizzes.add(toRow(resultSet));
 			}
-		} catch (SQLException e) {
+		} catch (SQLException e) { 
 			quizLogger.error(e.getMessage(), e);
 			throw new DBException(MessageConstant.UNABLE_TO_GET_QUIZZES);
 		} finally {
@@ -98,8 +98,8 @@ public class QuizDAOImpl implements QuizDAO {
 			Boolean isSaveAndResume = resultSet.getBoolean("is_save_and_resume");
 			Timestamp createdOn = resultSet.getTimestamp("created_on");
 //			Timestamp modifiedOn = resultSet.getTimestamp("updated_on");
-			String createdBy = resultSet.getString("created_by");
-			String modifiedBy = resultSet.getString("modified_by");
+			Integer createdBy = resultSet.getInt("created_by");
+			Integer modifiedBy = resultSet.getInt("modified_by");
 
 			quiz = new Quiz();
 			quiz.setId(quizId);
@@ -107,7 +107,7 @@ public class QuizDAOImpl implements QuizDAO {
 			quiz.setTags(quizTags);
 			quiz.setActivityPoints(activityPoints);
 			quiz.setDuration(duration);
-			quiz.setMaxNumbetOfAttempts(maxNumberOfAttempts);
+			quiz.setMaxNumberOfAttempts(maxNumberOfAttempts);
 			quiz.setIsLevelOverride(isLevelOverride);
 			quiz.setSlugUrl(slugUrl);
 			quiz.setDescription(description);
@@ -119,7 +119,7 @@ public class QuizDAOImpl implements QuizDAO {
 			quiz.setCategoryId(categoryId);
 			quiz.setPassPercentage(passPercentage);
 			quiz.setIsSlugUrlAccess(isSlugUrlAccess);
-			quiz.setIsQuizTimerEnnable(isQuizTimerEnnabled);
+			quiz.setIsQuizTimerEnable(isQuizTimerEnnabled);
 			quiz.setIsShuffleQuestion(isShuffleQuestion);
 			quiz.setIsShuffleAnswer(isShuffleAnswer);
 			quiz.setIsDisplayScoreResult(isDisplayScoreResult);
@@ -231,10 +231,10 @@ public class QuizDAOImpl implements QuizDAO {
 			String sqlStmt = "INSERT INTO quizzes(" + "name," + "tags," + "activity_point," + "slug_url," + "level_id,"
 					+ "category_id," + "pass_percentage," + "created_by," + "max_number_of_attempts,"
 					+ "is_level_override," + "description," + "meta_keywords," + "meta_description," + "icon_url,"
-					+ "duration," + "quiz_timer," + "shuffle_question," + "display_score_result," + "attempt_review,"
+					+ "duration," + "quiz_timer," + "shuffle_question," + "shuffle_answer," + "display_score_result," + "attempt_review,"
 					+ "show_whether_correct," + "show_correct_answer," + "show_answer_explanation,"
 					+ "is_save_and_resume," + "updated_on," + "modified_by," + "is_slug_url_access," + "created_on,"
-					+ "quiz_instructions" + ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+					+ "quiz_instructions,"+"is_status" + ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			pstmt = conn.prepareStatement(sqlStmt);
 			pstmt.setString(1, quiz.getQuiz().getName());
 			pstmt.setString(2, quiz.getQuiz().getTags());
@@ -243,15 +243,15 @@ public class QuizDAOImpl implements QuizDAO {
 			pstmt.setInt(5, quiz.getQuiz().getLevelId());
 			pstmt.setInt(6, quiz.getQuiz().getCategoryId());
 			pstmt.setInt(7, quiz.getQuiz().getPassPercentage());
-			pstmt.setString(8, quiz.getQuiz().getCreatedBy());
-			pstmt.setInt(9, quiz.getQuiz().getMaxNumbetOfAttempts());
+			pstmt.setInt(8, quiz.getQuiz().getCreatedBy());
+			pstmt.setInt(9, quiz.getQuiz().getMaxNumberOfAttempts());
 			pstmt.setBoolean(10, quiz.getQuiz().getIsLevelOverride());
 			pstmt.setString(11, quiz.getQuiz().getDescription());
 			pstmt.setString(12, quiz.getQuiz().getMetaKeywords());
 			pstmt.setString(13, quiz.getQuiz().getMetaDescription());
 			pstmt.setString(14, quiz.getQuiz().getIconUrl());
 			pstmt.setTime(15, quiz.getQuiz().getDuration());
-			pstmt.setBoolean(16, quiz.getQuiz().getIsQuizTimerEnnable());
+			pstmt.setBoolean(16, quiz.getQuiz().getIsQuizTimerEnable());
 			pstmt.setBoolean(17, quiz.getQuiz().getIsShuffleQuestion());
 			pstmt.setBoolean(18, quiz.getQuiz().getIsShuffleAnswer());
 			pstmt.setBoolean(19, quiz.getQuiz().getIsDisplayScoreResult());
@@ -261,12 +261,14 @@ public class QuizDAOImpl implements QuizDAO {
 			pstmt.setBoolean(23, quiz.getQuiz().getIsShowAnswerExplanation());
 			pstmt.setBoolean(24, quiz.getQuiz().getIsSaveAndResume());
 			pstmt.setTimestamp(25, quiz.getQuiz().getModifiedOn());
-			pstmt.setBoolean(26, quiz.getQuiz().getIsSlugUrlAccess());
+			pstmt.setInt(26, quiz.getQuiz().getModifiedBy());
+			pstmt.setBoolean(27, quiz.getQuiz().getIsSlugUrlAccess());
 			// Get current time stamp
 			Date date = new Date();
 			Timestamp currentTimestamp = new Timestamp(date.getTime());
-			pstmt.setTimestamp(27, currentTimestamp);
-			pstmt.setString(28, quiz.getQuiz().getQuizInstructions());
+			pstmt.setTimestamp(28, currentTimestamp);
+			pstmt.setString(29, quiz.getQuiz().getQuizInstructions());
+			pstmt.setBoolean(30, quiz.getQuiz().getIsStatus());
 			pstmt.executeUpdate();
 			pstmt.close();
 			// Get quiz last record id

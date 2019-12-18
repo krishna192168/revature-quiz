@@ -91,12 +91,12 @@ public class TestDAO {
 		quizObj.setCategoryId(1);
 		quizObj.setPassPercentage(80);
 		quizObj.setIsLevelOverride(false);
-		quizObj.setMaxNumbetOfAttempts(5);
+		quizObj.setMaxNumberOfAttempts(5);
 		quizObj.setIsAttemptReview(false);
 		quizObj.setIsShowWhetherCorrect(false);
 		quizObj.setIsShowCorrectAnswer(false);
 		quizObj.setIsShowAnswerExplanation(false);
-		quizObj.setIsQuizTimerEnnable(true);
+		quizObj.setIsQuizTimerEnable(true);
 		quizObj.setIsShuffleAnswer(false);
 		quizObj.setIsShuffleQuestion(false);
 		quizObj.setIsDisplayScoreResult(false);
