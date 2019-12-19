@@ -42,22 +42,54 @@ public class QuizDAOImpl implements QuizDAO {
 			Logger.info("Find all quizzes");
 			conn = dataSource.getConnection();
 			quizzes = new ArrayList<Quiz>();
-			String sqlStmt = "SELECT quiz.id," + "quiz.name AS quiz_name," + "quiz.tags," + "quiz.activity_point,"
-					+ "quiz.duration," + "quiz.max_number_of_attempts," + "quiz.is_level_override," + "quiz.slug_url,"
-					+ "quiz.description," + "quiz.meta_keywords," + "quiz.meta_description," + "quiz.icon_url,"
-					+ "quiz.quiz_instructions," + "quiz.level_id," + "quiz.category_id," + "quiz.pass_percentage,"
-					+ "quiz.is_slug_url_access," + "quiz.quiz_timer," + "quiz.shuffle_question,"
-					+ "quiz.shuffle_answer," + "quiz.display_score_result," + "quiz.attempt_review,"
-					+ "quiz.show_whether_correct," + "quiz.show_correct_answer," + "quiz.show_answer_explanation,"
-					+ "quiz.is_save_and_resume," + "quiz.created_on,"
+//			String sqlStmt = "SELECT quiz.id," + "quiz.name AS quiz_name," + "quiz.tags," + "quiz.activity_point,"
+//					+ "quiz.duration," + "quiz.max_number_of_attempts," + "quiz.is_level_override," + "quiz.slug_url,"
+//					+ "quiz.description," + "quiz.meta_keywords," + "quiz.meta_description," + "quiz.icon_url,"
+//					+ "quiz.quiz_instructions," + "quiz.level_id," + "quiz.category_id," + "quiz.pass_percentage,"
+//					+ "quiz.is_slug_url_access," + "quiz.quiz_timer," + "quiz.shuffle_question,"
+//					+ "quiz.shuffle_answer," + "quiz.display_score_result," + "quiz.attempt_review,"
+//					+ "quiz.show_whether_correct," + "quiz.show_correct_answer," + "quiz.show_answer_explanation,"
+//					+ "quiz.is_save_and_resume," + "quiz.created_on,"
 //					+ "quiz.updated_on,"
-					+ "quiz.created_by," + "quiz.modified_by " + "FROM quizzes quiz";
-			pstmt = conn.prepareStatement(sqlStmt);
+//					+ "quiz.created_by," + "quiz.modified_by " + "FROM quizzes quiz";
+			StringBuilder sqlStmt = new StringBuilder();
+			sqlStmt.append("SELECT quiz.id,")
+					.append("quiz.name AS quiz_name,")
+					.append("quiz.tags,")
+					.append("quiz.activity_point,")
+					.append("quiz.duration,")
+					.append("quiz.max_number_of_attempts,")
+					.append("quiz.is_level_override,")
+					.append("quiz.slug_url,")
+					.append("quiz.description,")
+					.append("quiz.meta_keywords,")
+					.append("quiz.meta_description,")
+					.append("quiz.icon_url,")
+					.append("quiz.quiz_instructions,")
+					.append("quiz.level_id,")
+					.append("quiz.category_id,")
+					.append("quiz.pass_percentage,")
+					.append("quiz.is_slug_url_access,")
+					.append("quiz.quiz_timer,")
+					.append("quiz.shuffle_question,")
+					.append("quiz.shuffle_answer,")
+					.append("quiz.display_score_result,")
+					.append("quiz.attempt_review,")
+					.append("quiz.show_whether_correct,")
+					.append("quiz.show_correct_answer,")
+					.append("quiz.show_answer_explanation,")
+					.append("quiz.is_save_and_resume,")
+					.append("quiz.created_on,")
+					.append("quiz.updated_on,")
+					.append("quiz.created_by,")
+					.append("quiz.modified_by")
+					.append("FROM quizzes quiz");
+			pstmt = conn.prepareStatement(sqlStmt.toString());
 			resultSet = pstmt.executeQuery();
 			while (resultSet.next()) {
 				quizzes.add(toRow(resultSet));
 			}
-		} catch (SQLException e) { 
+		} catch (SQLException e) {
 			Logger.error(e.getMessage(), e);
 			throw new DBException(MessageConstant.UNABLE_TO_GET_QUIZZES);
 		} finally {
