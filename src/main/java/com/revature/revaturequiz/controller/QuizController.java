@@ -34,7 +34,7 @@ public class QuizController {
 		}
 		catch(ServiceException exception)
 		{
-			return new ResponseEntity<>(exception.getMessage(),HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	@PostMapping("quiz")
@@ -42,9 +42,9 @@ public class QuizController {
 	{
 		 try {
 			quizService.createQuiz(quiz);
-			return new ResponseEntity<>(MessageConstant.SUCCESSFULLY_QUIZ_CREATED,HttpStatus.OK);
+			return new ResponseEntity<>(MessageConstant.SUCCESSFULLY_QUIZ_CREATED,HttpStatus.CREATED);
 		} catch (ServiceException e) {
-			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	@GetMapping("pools/{quizId}")
@@ -56,7 +56,7 @@ public class QuizController {
 			return new ResponseEntity<>(poolResponse,HttpStatus.OK);
 		}
 		catch(ServiceException e) {
-			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		
