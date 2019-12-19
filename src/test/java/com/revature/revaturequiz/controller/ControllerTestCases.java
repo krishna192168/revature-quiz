@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,7 +45,6 @@ import com.revature.revaturequiz.util.MessageConstant;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ControllerTestCases {
-	private static final Class QuizDTO = null;
 	@Rule
 	public JUnitRestDocumentation restDoc = new JUnitRestDocumentation("target/generated-snippets");
 	//Here where we stored snippets

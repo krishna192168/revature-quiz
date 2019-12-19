@@ -1,7 +1,6 @@
 package com.revature.revaturequiz.service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -22,12 +21,12 @@ import com.revature.revaturequiz.util.MessageConstant;
 import com.revature.revaturequiz.validator.QuizValidator;
 @Service
 public class QuizServiceImpl implements QuizService {
-	final Logger serviceLogger = LoggerFactory.getLogger("QuizService");
+	final Logger Logger = LoggerFactory.getLogger("QuizService");
 	@Autowired
 	private QuizDAO quizDAO;
 	public List<QuizResponseDTO> findAllQuizzes() throws ServiceException
 	{
-		serviceLogger.info("Find all quizzes");
+		Logger.info("Find all quizzes");
 		final List<QuizResponseDTO> quizzesDTO = new ArrayList<QuizResponseDTO>();
 		
 		try {
@@ -41,7 +40,7 @@ public class QuizServiceImpl implements QuizService {
 						}
 					);
 		} catch (DBException e) {
-			serviceLogger.error(e.getMessage(), e);
+			Logger.error(e.getMessage(), e);
 			throw new ServiceException(e.getMessage());
 		}
 		return quizzesDTO;
@@ -51,7 +50,7 @@ public class QuizServiceImpl implements QuizService {
 		
 		final PoolResponseDTO poolResponseObj = new PoolResponseDTO();
 		try {
-			serviceLogger.info("Find pools by id");
+			Logger.info("Find pools by id");
 			final List<QuizPool> pools = quizDAO.findPoolsByQuizId(quizId);
 			poolResponseObj.setPools(pools);
 			pools.stream()
@@ -60,14 +59,14 @@ public class QuizServiceImpl implements QuizService {
 						try {
 							poolResponseObj.setPoolQuestions(quizDAO.findPoolQuestions(poolObj.getId()));
 						} catch (DBException e) {
-							serviceLogger.error(e.getMessage(),e);
+							Logger.error(e.getMessage(),e);
 						}
 					}
 					);
 		}
 		catch(DBException e)
 		{
-			serviceLogger.error(e.getMessage(),e);
+			Logger.error(e.getMessage(),e);
 			throw new ServiceException(MessageConstant.UNABLE_TO_GET_POOLS);
 		}
 		return poolResponseObj;
@@ -76,12 +75,12 @@ public class QuizServiceImpl implements QuizService {
 	{
 		Boolean isQuizCreated = null;
 		try {
-			serviceLogger.info("Create quiz");
+			Logger.info("Create quiz");
 			//Call create Quiz method in quizdao
 			QuizValidator.quizValidator(quiz);
 			isQuizCreated = quizDAO.createQuiz(quiz);
 		}catch(ValidatorException | DBException e) {
-			serviceLogger.error(e.getMessage(),e);
+			Logger.error(e.getMessage(),e);
 			throw new ServiceException(e.getMessage());
 		}
 		return isQuizCreated;
