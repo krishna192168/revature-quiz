@@ -22,6 +22,7 @@ import com.revature.revaturequiz.dto.QuizDTO;
 import com.revature.revaturequiz.dto.QuizResponseDTO;
 import com.revature.revaturequiz.exception.DBException;
 import com.revature.revaturequiz.exception.ServiceException;
+import com.revature.revaturequiz.exception.ValidatorException;
 import com.revature.revaturequiz.model.Quiz;
 import com.revature.revaturequiz.model.QuizPool;
 import com.revature.revaturequiz.model.QuizPoolQuestion;
@@ -111,7 +112,7 @@ public class ServiceTest {
 	}
 	
 	@Test
-	public void testCreateQuiz()
+	public void testCreateQuiz() throws ValidatorException
 	{
 		try {
 			QuizDTO quizDTO = new QuizDTO();
@@ -154,7 +155,7 @@ public class ServiceTest {
 		quizService.findPoolsByQuizId(1);
 	}
 	@Test(expected = ValidationException.class)
-	public void negativetestCreateQuiz() throws DBException, ServiceException
+	public void negativetestCreateQuiz() throws DBException, ServiceException, ValidatorException
 	{
 		Quiz quizObj = new Quiz();
 		

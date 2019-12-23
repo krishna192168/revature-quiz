@@ -28,62 +28,38 @@ import com.revature.revaturequiz.util.MessageConstant;
 
 @Repository
 public class QuizDAOImpl implements QuizDAO {
+	private final DataSource dataSource;
+	
+
 	@Autowired
-	private DataSource dataSource;
+	public QuizDAOImpl(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+
 	private final Logger Logger = LoggerFactory.getLogger("QuizDAO");
 
 	public List<Quiz> findAllQuizzes() throws DBException {
 		Connection conn = null;
- 		PreparedStatement pstmt = null;
+		PreparedStatement pstmt = null;
 		ResultSet resultSet = null;
 		List<Quiz> quizzes = null;
-
 		try {
 			Logger.info("Find all quizzes");
 			conn = dataSource.getConnection();
 			quizzes = new ArrayList<Quiz>();
-//			String sqlStmt = "SELECT quiz.id," + "quiz.name AS quiz_name," + "quiz.tags," + "quiz.activity_point,"
-//					+ "quiz.duration," + "quiz.max_number_of_attempts," + "quiz.is_level_override," + "quiz.slug_url,"
-//					+ "quiz.description," + "quiz.meta_keywords," + "quiz.meta_description," + "quiz.icon_url,"
-//					+ "quiz.quiz_instructions," + "quiz.level_id," + "quiz.category_id," + "quiz.pass_percentage,"
-//					+ "quiz.is_slug_url_access," + "quiz.quiz_timer," + "quiz.shuffle_question,"
-//					+ "quiz.shuffle_answer," + "quiz.display_score_result," + "quiz.attempt_review,"
-//					+ "quiz.show_whether_correct," + "quiz.show_correct_answer," + "quiz.show_answer_explanation,"
-//					+ "quiz.is_save_and_resume," + "quiz.created_on,"
-//					+ "quiz.updated_on,"
-//					+ "quiz.created_by," + "quiz.modified_by " + "FROM quizzes quiz";
 			StringBuilder sqlStmt = new StringBuilder();
-			sqlStmt.append("SELECT quiz.id,")
-					.append("quiz.name AS quiz_name,")
-					.append("quiz.tags,")
-					.append("quiz.activity_point,")
-					.append("quiz.duration,")
-					.append("quiz.max_number_of_attempts,")
-					.append("quiz.is_level_override,")
-					.append("quiz.slug_url,")
-					.append("quiz.description,")
-					.append("quiz.meta_keywords,")
-					.append("quiz.meta_description,")
-					.append("quiz.icon_url,")
-					.append("quiz.quiz_instructions,")
-					.append("quiz.level_id,")
-					.append("quiz.category_id,")
-					.append("quiz.pass_percentage,")
-					.append("quiz.is_slug_url_access,")
-					.append("quiz.quiz_timer,")
-					.append("quiz.shuffle_question,")
-					.append("quiz.shuffle_answer,")
-					.append("quiz.display_score_result,")
-					.append("quiz.attempt_review,")
-					.append("quiz.show_whether_correct,")
-					.append("quiz.show_correct_answer,")
-					.append("quiz.show_answer_explanation,")
-					.append("quiz.is_save_and_resume,")
-					.append("quiz.created_on,")
-					.append("quiz.updated_on,")
-					.append("quiz.created_by,")
-					.append("quiz.modified_by")
-					.append("FROM quizzes quiz");
+			sqlStmt.append("SELECT quiz.id,").append("quiz.name AS quiz_name,").append("quiz.tags,")
+					.append("quiz.activity_point,").append("quiz.duration,").append("quiz.max_number_of_attempts,")
+					.append("quiz.is_level_override,").append("quiz.slug_url,").append("quiz.description,")
+					.append("quiz.meta_keywords,").append("quiz.meta_description,").append("quiz.icon_url,")
+					.append("quiz.quiz_instructions,").append("quiz.level_id,").append("quiz.category_id,")
+					.append("quiz.pass_percentage,").append("quiz.is_slug_url_access,").append("quiz.quiz_timer,")
+					.append("quiz.shuffle_question,").append("quiz.shuffle_answer,")
+					.append("quiz.display_score_result,").append("quiz.attempt_review,")
+					.append("quiz.show_whether_correct,").append("quiz.show_correct_answer,")
+					.append("quiz.show_answer_explanation,").append("quiz.is_save_and_resume,")
+					.append("quiz.created_on,").append("quiz.updated_on,").append("quiz.created_by,")
+					.append("quiz.modified_by").append(" FROM quizzes quiz LIMIT 5");
 			pstmt = conn.prepareStatement(sqlStmt.toString());
 			resultSet = pstmt.executeQuery();
 			while (resultSet.next()) {
@@ -260,14 +236,17 @@ public class QuizDAOImpl implements QuizDAO {
 			conn.setAutoCommit(false);
 			// Set save point
 			createQuiz = conn.setSavepoint("CreateQuiz");
-			String sqlStmt = "INSERT INTO quizzes(" + "name," + "tags," + "activity_point," + "slug_url," + "level_id,"
-					+ "category_id," + "pass_percentage," + "created_by," + "max_number_of_attempts,"
-					+ "is_level_override," + "description," + "meta_keywords," + "meta_description," + "icon_url,"
-					+ "duration," + "quiz_timer," + "shuffle_question," + "shuffle_answer," + "display_score_result," + "attempt_review,"
-					+ "show_whether_correct," + "show_correct_answer," + "show_answer_explanation,"
-					+ "is_save_and_resume," + "updated_on," + "modified_by," + "is_slug_url_access," + "created_on,"
-					+ "quiz_instructions,"+"is_status" + ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-			pstmt = conn.prepareStatement(sqlStmt);
+			StringBuilder sqlStmt = new StringBuilder();
+			sqlStmt.append("INSERT INTO quizzes(");
+			sqlStmt.append("name,tags,activity_point,slug_url,level_id,category_id,pass_percentage,created_by,");
+			sqlStmt.append(
+					"max_number_of_attempts,is_level_override,description,meta_keywords,meta_description,icon_url,");
+			sqlStmt.append("duration,quiz_timer,shuffle_question,shuffle_answer,display_score_result,attempt_review,");
+			sqlStmt.append(
+					"show_whether_correct,show_correct_answer,show_answer_explanation,is_save_and_resume,updated_on");
+			sqlStmt.append(",modified_by,is_slug_url_access,created_on,quiz_instructions,is_status");
+			sqlStmt.append(") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			pstmt = conn.prepareStatement(sqlStmt.toString());
 			pstmt.setString(1, quiz.getQuiz().getName());
 			pstmt.setString(2, quiz.getQuiz().getTags());
 			pstmt.setInt(3, quiz.getQuiz().getActivityPoints());
@@ -318,8 +297,7 @@ public class QuizDAOImpl implements QuizDAO {
 			List<QuizPool> quizPools = quiz.getQuizPool();
 
 			for (QuizPool quizObj : quizPools) {
-				String sqlStmtPool = "INSERT INTO quiz_pools(" + "name," + "max_number_of_questions," + "quiz_id" + ")"
-						+ "VALUES(?,?,?)";
+				String sqlStmtPool = "INSERT INTO quiz_pools(name,max_number_of_questions,quiz_id)VALUES(?,?,?)";
 				pstmt = conn.prepareStatement(sqlStmtPool);
 				pstmt.setString(1, quizObj.getName());
 				pstmt.setInt(2, quizObj.getMaxNumerOfQuestion());
@@ -366,6 +344,4 @@ public class QuizDAOImpl implements QuizDAO {
 		}
 		return isRowsInserted;
 	}
-	// Validate quiz
-//	public void 
 }
