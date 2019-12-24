@@ -29,37 +29,51 @@ public class QuizServiceImpl implements QuizService {
 		this.quizDAO = quizDAO;
 	}
 
-	public List<QuizResponseDTO> findAllQuizzes() throws ServiceException, DBException {
+	public List<QuizResponseDTO> findAllQuizzes() throws ServiceException {
 		Logger.info("Find all quizzes");
 		final List<QuizResponseDTO> quizzesDTO = new ArrayList<QuizResponseDTO>();
 
-		List<Quiz> quizzes = quizDAO.findAllQuizzes();
-
-		quizzes.forEach((quiz) -> {
-			QuizResponseDTO quizDTO = new QuizResponseDTO();
-			quizDTO.setQuiz(quiz);
-			quizzesDTO.add(quizDTO);
-		});
+		try {
+			List<Quiz> quizzes = quizDAO.findAllQuizzes();
+			quizzes.forEach((quiz) -> {
+				QuizResponseDTO quizDTO = new QuizResponseDTO();
+				quizDTO.setQuiz(quiz);
+				quizzesDTO.add(quizDTO);
+			});
+		} catch (DBException e) {
+			Logger.info(e.getMessage(), e);
+			throw new ServiceException(e.getMessage(), e);
+		}
 		return quizzesDTO;
 	}
 
-	public PoolResponseDTO findPoolsByQuizId(final int quizId) throws ServiceException, DBException {
+	public PoolResponseDTO findPoolsByQuizId(final int quizId) throws ServiceException {
 		final PoolResponseDTO poolResponseObj = new PoolResponseDTO();
 		Logger.info("Find pools by id");
-		final List<QuizPool> pools = quizDAO.findPoolsByQuizId(quizId);
-		poolResponseObj.setPools(pools);
-		for (QuizPool poolObj : pools) {
-			poolResponseObj.setPoolQuestions(quizDAO.findPoolQuestions(poolObj.getId()));
+		try {
+			final List<QuizPool> pools = quizDAO.findPoolsByQuizId(quizId);
+			poolResponseObj.setPools(pools);
+			for (QuizPool poolObj : pools) {
+				poolResponseObj.setPoolQuestions(quizDAO.findPoolQuestions(poolObj.getId()));
+			}
+		} catch (DBException e) {
+			Logger.info(e.getMessage(), e);
+			throw new ServiceException(e.getMessage(), e);
 		}
 		return poolResponseObj;
 	}
 
-	public Boolean createQuiz(QuizDTO quiz) throws ServiceException, ValidatorException, DBException {
+	public Boolean createQuiz(QuizDTO quiz) throws ServiceException {
 		Boolean isQuizCreated = null;
 		Logger.info("Create quiz");
 		// Call create Quiz method in quizdao
-		QuizValidator.quizValidator(quiz);
-		isQuizCreated = quizDAO.createQuiz(quiz);
+		try {
+			QuizValidator.quizValidator(quiz);
+			isQuizCreated = quizDAO.createQuiz(quiz);
+		} catch (ValidatorException | DBException e) {
+			Logger.info(e.getMessage(), e);
+			throw new ServiceException(e.getMessage(), e);
+		}
 		return isQuizCreated;
 	}
 }

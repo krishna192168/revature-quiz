@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.revature.revaturequiz.dto.PoolResponseDTO;
 import com.revature.revaturequiz.dto.QuizDTO;
 import com.revature.revaturequiz.dto.QuizResponseDTO;
-import com.revature.revaturequiz.exception.DBException;
 import com.revature.revaturequiz.exception.ServiceException;
-import com.revature.revaturequiz.exception.ValidatorException;
 import com.revature.revaturequiz.service.QuizService;
 import com.revature.revaturequiz.util.MessageConstant;
 
@@ -38,9 +36,7 @@ public class QuizController {
 			quizzesList = quizService.findAllQuizzes();
 			return new ResponseEntity<>(quizzesList, HttpStatus.OK);
 		} catch (ServiceException exception) {
-			return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-		} catch (DBException exception) {
-			return new ResponseEntity<>(exception.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+			return new ResponseEntity<>(exception.getMessage(), HttpStatus.NO_CONTENT);
 		}
 	}
 
@@ -50,25 +46,17 @@ public class QuizController {
 			quizService.createQuiz(quiz);
 			return new ResponseEntity<>(MessageConstant.SUCCESSFULLY_QUIZ_CREATED, HttpStatus.CREATED);
 		} catch (ServiceException e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-		} catch (DBException exception) {
-			return new ResponseEntity<>(exception.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
-		} catch (ValidatorException exception) {
-			return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
 
 	@GetMapping("pools/{quizId}")
 	public ResponseEntity<Object> findPoolByQuizId(@PathVariable("quizId") int quizId) {
-		PoolResponseDTO poolResponse = null;
 		try {
-			poolResponse = quizService.findPoolsByQuizId(quizId);
+			PoolResponseDTO poolResponse = quizService.findPoolsByQuizId(quizId);
 			return new ResponseEntity<>(poolResponse, HttpStatus.OK);
 		} catch (ServiceException e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-		} catch (DBException e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
 		}
-
 	}
 }
