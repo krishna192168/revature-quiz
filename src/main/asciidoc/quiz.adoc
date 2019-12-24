@@ -1,0 +1,45 @@
+:toc: left
+:sectnums:
+
+= Quiz API documentaion
+
+== Quiz
+Employee can create and read quiz.  
+
+
+
+=== Find all
+
+==== Client URL(cURL)
+include::{snippets}/quiz/find_all/curl-request.adoc[]
+
+==== HTTP request
+include::{snippets}/quiz/find_all/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/quiz/find_all/http-response.adoc[]
+
+=== Create
+
+==== Client URL(cURL)
+include::{snippets}/quiz/create_quiz/curl-request.adoc[]
+
+==== HTTP request
+include::{snippets}/quiz/create_quiz/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/quiz/create_quiz/http-response.adoc[]
+
+==== Reuest Fields
+include::{snippets}/quiz/create_quiz/request-fields.adoc[]
+
+=== Find pools
+
+==== Client URL(cURL)
+include::{snippets}/quiz/find_pools/curl-request.adoc[]
+
+==== HTTP request
+include::{snippets}/quiz/find_pools/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/quiz/find_pools/http-response.adoc[]
