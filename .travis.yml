@@ -9,11 +9,14 @@ addons:
     token:
       secure: 3e22e8dd6c74fc4eb2510a3dd4c7268e1405ae54 # sonor encrypted token
       
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - '$HOME/.m2/repository'
-    - '$HOME/.sonar/cache'
-
+    - '$HOME/.gradle/caches/'
+    - '$HOME/.gradle/wrapper/'
+    
 script:
   # here builds the project, runs the tests with coverage and then execute the SonarCloud analysis
   - ./gradlew build --scan -s
