@@ -29,7 +29,7 @@ public class QuizController {
 		this.quizService = quizService;
 	}
 
-	@GetMapping
+	@GetMapping("/list")
 	public ResponseEntity<Object> findAllQuizzes() {
 		List<QuizResponseDTO> quizzesList = null;
 		try {
